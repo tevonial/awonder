@@ -1,0 +1,201 @@
+
+    /*public static final String GEN_UID = HOST + DIR + "gen_uid.php",
+            GET_STATE = HOST + DIR + "get_state.php",
+            GET_POLL = HOST + DIR + "get_poll.php",
+            POST_POLL = HOST + DIR + "post_poll.php",
+            POST_ANSWER = HOST + DIR + "post_response.php",
+            GET_RESULTS = HOST + DIR + "get_results.php",
+            NEW_STATUS = HOST + DIR + "change_status.php";
+
+    public static void getInits() {
+        HttpHandler.RequestHandler requestHandler = new HttpHandler.RequestHandler() {
+            @Override
+            public void onResponse(String[] s) {
+                AnswerPollFragment.sMax = Integer.valueOf(s[0]);
+                PollFragment.sPollStr = s[1];
+                PollFragment.sPollMode = Integer.valueOf(s[2]);
+            }
+        };
+
+        HttpHandler.getJson(HttpHandler.MYPOLL_REQ, requestHandler);
+    }
+
+    //region HTTP
+    public static String httpGet(String targetURL, String parameters) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        StringBuffer response = new StringBuffer();
+        int http_response = 0;
+
+        do {
+            try {
+                if (!isOnline()) {
+                    throw new IOException();
+                }
+                String url = targetURL + "?" + parameters;
+                URL obj = new URL(url);
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+                con.setConnectTimeout(5000);
+                con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                con.setRequestProperty("Accept",       "application/json; charset=UTF-8");
+                con.setRequestMethod("GET");
+                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                http_response = con.getResponseCode();
+            } catch (IOException e) {
+                if (!mNetPause) {
+                    (new NetWaitTask()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+            }
+
+            synchronized (mNetLock) {
+                while (mNetPause) {
+                    try {
+                        mNetLock.wait();
+                    } catch (InterruptedException e) {}
+                }
+            }
+
+        } while (http_response != HttpURLConnection.HTTP_OK);
+
+        return response.toString();
+    }
+
+    public static void postJson(String targetURL, JSONObject jsonObject) {
+        int http_response = 0;
+        do {
+            try {
+                if (!isOnline()) {
+                    throw new IOException();
+                }
+                URL object = new URL(targetURL);
+                HttpURLConnection con = (HttpURLConnection) object.openConnection();
+                con.setConnectTimeout(5000);
+                con.setDoOutput(true); con.setDoInput(true);
+                con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                con.setRequestProperty("Accept",       "application/json; charset=UTF-8");
+                con.setRequestMethod("POST");
+                OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());
+                wr.write(jsonObject.toString());
+                wr.flush();
+
+                http_response = con.getResponseCode();
+            } catch (IOException e) {
+                if (!mNetPause) {
+                    (new NetWaitTask()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+            }
+
+            synchronized (mNetLock) {
+                while (mNetPause) {
+                    try {
+                        mNetLock.wait();
+                    } catch (InterruptedException e) {}
+                }
+            }
+
+        } while (http_response != HttpURLConnection.HTTP_OK);
+    }
+
+    //endregion
+
+    //region GETS
+    public static String requestUID() {
+        try {
+            return (new JSONObject(httpGet(GEN_UID, ""))).getString("uid");
+        } catch (JSONException e) {
+            Log.d("EW", "JSONEXception (requestUID): " + e.getMessage());
+            return "";
+        }
+    }
+
+
+
+    public static int getStatus() {
+        try {
+            JSONObject obj = new JSONObject(httpGet(GET_STATE, "status&uid=" + UID));
+            lastStatus = obj.getInt("state");
+            return lastStatus;
+        } catch (JSONException e) {
+            Log.d("EW", "JSONEXception (getStatus): " + e.getMessage());
+            return 0;
+        }
+    }
+
+
+
+    public static int getResponseCount() {
+        try {
+            JSONObject obj = new JSONObject(httpGet(GET_STATE, "count&uid=" + UID));
+            return obj.getInt("response_count");
+        } catch (JSONException e) {
+            Log.d("EW", "JSONEXception (getPoll): " + e.getMessage());
+            return 0;
+        }
+    }
+
+    public static void resetStatus() {
+        httpGet(GET_STATE, "reset&uid=" + UID);
+    }
+
+    public static String getPoll() {
+        try {
+            JSONObject obj = new JSONObject(httpGet(GET_POLL, ""));
+            poll_ptr = obj.getString("p_uid");
+            //AnswerPollFragment.MODE = obj.getInt("p_mode");
+            return obj.getString("p_poll");
+        } catch (JSONException e) {
+            Log.d("EW", "JSONEXception (getPoll): " + e.getMessage());
+            return "";
+        }
+    }
+
+    public static String getResults() {
+        return httpGet(GET_RESULTS, "uid=" + UID);
+    }
+
+    //endregion
+
+    //region POSTS
+    public static void postPoll(String poll, int mode) {
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("uid", UID);
+            obj.put("poll", poll);
+            obj.put("mode", mode);
+            postJson(POST_POLL, obj);
+        } catch (JSONException e) {
+
+        }
+    }
+
+    public static void answerPoll(int answer) {
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("uid", UID);
+            obj.put("p_uid", poll_ptr);
+            obj.put("a", String.valueOf(answer));
+            Log.d("EW", "JSON: " + obj.toString());
+            postJson(POST_ANSWER, obj);
+        } catch (JSONException e) {
+
+        }
+    }
+
+    public static void changeState(int state) {
+        try {
+            JSONObject obj = new JSONObject();
+            obj.put("uid", UID);
+            obj.put("state", String.valueOf(state));
+            postJson(NEW_STATUS, obj);
+        } catch (JSONException e) {
+
+        }
+    }
+    //endregion*/

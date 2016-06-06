@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:custom="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/prompt_answer_poll"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:padding="12dp"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white" />
+
+    <RelativeLayout
+        android:id="@+id/mode1"
+        android:layout_below="@+id/title"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <android.support.v7.widget.AppCompatSeekBar
+            android:id="@+id/seek"
+            android:layout_below="@+id/seek_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:max="10"/>
+
+        <TextView
+            android:id="@+id/seek_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textSize="40sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:text="0"/>
+
+        <Button
+            android:background="@drawable/button"
+            android:layout_below="@id/seek"
+            android:id="@+id/send"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/send_button"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textAllCaps="true"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/mode2"
+        android:layout_below="@+id/title"
+        android:visibility="gone"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <Button
+            android:id="@+id/button_no"
+            android:background="@drawable/button"
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:width="0dp"
+            android:layout_weight="1"
+            android:text="no"/>
+
+        <Button
+            android:id="@+id/button_yes"
+            android:background="@drawable/button"
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:width="0dp"
+            android:layout_weight="1"
+            android:text="yes"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

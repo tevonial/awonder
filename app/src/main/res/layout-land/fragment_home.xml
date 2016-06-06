@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="invisible">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:width="0dp"
+        android:layout_weight="1"
+        android:padding="40dp"
+        android:layout_marginRight="-20dp">
+
+        <Button
+            android:id="@+id/ask"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/button"
+            android:text="@string/start_button"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:layout_margin="0dp"
+            android:textAllCaps="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:width="0dp"
+        android:layout_weight="1"
+        android:padding="40dp"
+        android:layout_marginLeft="-20dp">
+
+        <Button
+            android:id="@+id/answer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/button"
+            android:text="@string/answer_button"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:layout_margin="0dp"
+            android:textAllCaps="true"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

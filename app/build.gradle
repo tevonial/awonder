@@ -1,0 +1,46 @@
+apply plugin: 'com.android.application'
+
+android {
+    signingConfigs {
+        Workaholics {
+            keyAlias 'workaholics'
+            keyPassword 'kony2012'
+            storeFile file('C:/Users/Jerome/Documents/KeyStore.jks')
+            storePassword 'Meatpuppet69'
+        }
+    }
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+    defaultConfig {
+        applicationId "workaholics.everwonder"
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.Workaholics
+        }
+    }
+}
+
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.1.6'
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile 'org.apache.commons:commons-lang3:3.4'
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.volley:volley:1.0.0'
+    compile 'com.android.support:preference-v7:23.4.0'
+    compile 'com.github.dmytrodanylyk.android-process-button:library:1.0.0'
+}

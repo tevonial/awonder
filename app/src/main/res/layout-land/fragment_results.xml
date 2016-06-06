@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:baselineAligned="true"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/poll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:width="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/border"
+        android:gravity="center_horizontal"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="30sp"
+        android:padding="5dp"
+        android:layout_marginRight="15dp"/>
+
+    <RelativeLayout
+        android:id="@+id/pie_container"
+        android:width="0dp"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="-15dp"
+        android:visibility="invisible">
+
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
+
+</LinearLayout>

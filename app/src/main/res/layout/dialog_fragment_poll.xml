@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prompt_start_poll"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:padding="12dp"
+            android:gravity="center"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white" />
+
+        <LinearLayout
+            android:id="@+id/radios"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioGroup
+                android:padding="10dp"
+                android:id="@+id/rg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+
+                <RadioButton
+                    android:id="@+id/radio1"
+                    android:gravity="center"
+                    android:background="@drawable/button_radio"
+                    android:textColor="@drawable/button_radio_text"
+                    android:textStyle="bold"
+                    android:button="@null"
+                    android:checked="true"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:text="@string/radio_mode_1"/>
+
+                <RadioButton
+                    android:id="@+id/radio2"
+                    android:gravity="center"
+                    android:background="@drawable/button_radio"
+                    android:textColor="@drawable/button_radio_text"
+                    android:textStyle="bold"
+                    android:button="@null"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:text="@string/radio_mode_2"/>
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/edit"
+            android:gravity="top|left"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="60dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:isScrollContainer="true"
+            android:background="@android:color/transparent"
+            android:minHeight="150dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:background="@drawable/button"
+        android:id="@+id/send"
+        android:layout_width="match_parent"
+        android:layout_margin="10dp"
+        android:layout_height="45dp"
+        android:text="@string/send_button"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_alignBottom="@+id/body" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"/>
+
+</RelativeLayout>
