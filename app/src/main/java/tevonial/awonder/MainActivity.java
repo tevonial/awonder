@@ -199,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPreExecute() {
-            //start
             sLoading.setVisibility(View.VISIBLE);
             sContext = MainActivity.this;
             HttpHandler.setActivity(MainActivity.this);
