@@ -29,6 +29,7 @@
 
     <string name="pref_rem_uid_key">REM_UID</string>
     <string name="pref_rem_history_key">REM_HISTORY</string>
+    <string name="pref_self_respond_key">SELF_RESPOND</string>
 
     <string name="pref_det_default_host_key">DET_DEFAULT_HOST</string>
     <string name="pref_det_uid_key">DET_UID</string>
@@ -44,6 +45,7 @@
 
     <string name="pref_rem_uid_title">Remove stored identifier</string>
     <string name="pref_rem_history_title">Remove stored history</string>
+    <string name="pref_self_respond_title">Self Respond</string>
 
     <!-- Network Error -->
     <string name="net_error_title">Network Error</string>

@@ -33,17 +33,18 @@ public class HttpHandler {
     public static String sHost;
 
 
-    public static RequestType //Request Type         include params  url                  params    expected return keys
-                                GET_UID =     new RequestType(false, "get_uid.php",       "",       "uid"),
-                                GET_MYPOLL =  new RequestType(true,  "get_state.php",     "inits",  "quota", "poll", "mode"),
-                                GET_STATE =   new RequestType(true,  "get_state.php",     "state",  "state"),
-                                GET_COUNT =   new RequestType(true,  "get_state.php",     "count",  "count"),
-                                GET_POLL =    new RequestType(false, "get_poll.php",      "",       "p_uid", "p_poll", "p_mode"),
-                                GET_RESULT =  new RequestType(true,  "get_results.php",   "",       "results"),
+    public static RequestType //Request Type          include params  url                  params    expected return keys
+                                GET_UID =      new RequestType(false, "get_uid.php",       "",       "uid"),
+                                GET_MYPOLL =   new RequestType(true,  "get_state.php",     "inits",  "quota", "poll", "mode"),
+                                GET_STATE =    new RequestType(true,  "get_state.php",     "state",  "state"),
+                                GET_COUNT =    new RequestType(true,  "get_state.php",     "count",  "count"),
+                                GET_POLL =     new RequestType(false, "get_poll.php",      "",       "p_uid", "p_poll", "p_mode"),
+                                GET_RESULT =   new RequestType(true,  "get_results.php",   "",       "results"),
 
-                                POST_POLL =   new RequestType(false, "post_poll.php",     null),
-                                POST_ANSWER = new RequestType(false, "post_response.php", null),
-                                POST_STATE =  new RequestType(false, "post_state.php",    null);
+                                POST_POLL =    new RequestType(false, "post_poll.php",     null),
+                                POST_ANSWER =  new RequestType(false, "post_response.php", null),
+                                POST_STATE =   new RequestType(false, "post_state.php",    null),
+                                SELF_RESPOND = new RequestType(false, "post_self.php",     null);
 
     public static void setUid(String uid) {
         HttpHandler.sUid = uid;

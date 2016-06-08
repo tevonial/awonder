@@ -45,7 +45,7 @@ public class AnswerPollDialogFragment extends DialogFragment {
             mSendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((AnswerPollFragment) getTargetFragment()).onInput(mSeekBar.getProgress(), null);
+                    ((DialogListener<Integer>) getTargetFragment()).onInput(mSeekBar.getProgress(), null);
                     getDialog().dismiss();
                 }
             });

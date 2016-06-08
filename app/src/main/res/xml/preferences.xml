@@ -35,6 +35,10 @@
             android:defaultValue="0"
             android:max="6" />
 
+        <Preference
+            app:key="@string/pref_self_respond_key"
+            app:title="@string/pref_self_respond_title" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

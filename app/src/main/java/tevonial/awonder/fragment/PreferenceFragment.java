@@ -15,20 +15,25 @@ import org.json.JSONObject;
 
 import tevonial.awonder.MainActivity;
 import tevonial.awonder.R;
+import tevonial.awonder.dialog.AnswerPollDialogFragment;
+import tevonial.awonder.dialog.DialogListener;
+import tevonial.awonder.dialog.PollDialogFragment;
 import tevonial.awonder.handler.HttpHandler;
 import tevonial.awonder.library.SeekBarPreference;
 
-public class PreferenceFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener {
+public class PreferenceFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener, DialogListener<Integer> {
 
     private SeekBarPreference mStatePreference;
     private EditTextPreference mHostPreference;
+    private Preference mSelfRespondPreference;
     private String mScreenSize;
 
     private final String mStateKey = MainActivity.sContext.getString(R.string.pref_state_key),
                          mHostKey  = MainActivity.sContext.getString(R.string.pref_host_key);
 
     private final String mClickPreferenceKeys[] = {MainActivity.sContext.getString(R.string.pref_rem_history_key),
-                                                   MainActivity.sContext.getString(R.string.pref_rem_uid_key)};
+                                                   MainActivity.sContext.getString(R.string.pref_rem_uid_key),
+                                                   MainActivity.sContext.getString(R.string.pref_self_respond_key)};
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
@@ -86,6 +91,9 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
         mHostPreference = (EditTextPreference) findPreference(mHostKey);
         mHostPreference.setSummary(HttpHandler.sHost);
 
+        mSelfRespondPreference = findPreference(mClickPreferenceKeys[2]);
+        mSelfRespondPreference.setEnabled(HttpHandler.getState() == -1);
+
         for (String key : mClickPreferenceKeys) {
             findPreference(key).setOnPreferenceClickListener(this);
         }
@@ -108,6 +116,11 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
             Toast.makeText(getContext(), "Delete history", Toast.LENGTH_SHORT).show();
         } else if (key.equals(mClickPreferenceKeys[1])) {
             Toast.makeText(getContext(), "Delete Uid", Toast.LENGTH_SHORT).show();
+        } else if (key.equals(mClickPreferenceKeys[2])) {
+            AnswerPollDialogFragment mDialog = new AnswerPollDialogFragment();
+            mDialog.setTargetFragment(this, 0);
+            mDialog.setMode(PollFragment.sPollMode);
+            mDialog.show(getActivity().getSupportFragmentManager(), "fragment_dialog_poll_answer");
         }
 
         return true;
@@ -137,10 +150,29 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
                 Toast.makeText(MainActivity.sContext, text, Toast.LENGTH_SHORT).show();
                 if (success) {
                     mStatePreference.setSummary(String.valueOf(state));
+                    mSelfRespondPreference.setEnabled(state == -1);
                 }
             }
         }, obj);
 
+    }
+
+    @Override
+    public void onInput(Integer input, Integer mode) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("p_uid", HttpHandler.getUid());
+            obj.put("a", String.valueOf(input));
+        } catch (JSONException e) {}
+
+        HttpHandler.postJson(HttpHandler.SELF_RESPOND, new HttpHandler.RequestHandler() {
+            @Override
+            public void onResponse(boolean success, String[] s) {
+                if (success) {
+                    Toast.makeText(getContext(), "Self respond success", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, obj);
     }
 }
 
