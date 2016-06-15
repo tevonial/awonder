@@ -193,12 +193,10 @@ public class PollFragment extends Fragment implements DialogListener<String> {
         }
 
         @Override
-        protected void onPostExecute(Void v) {
-        }
+        protected void onPostExecute(Void v) {}
 
         @Override
-        protected void onPreExecute() {
-        }
+        protected void onPreExecute() {}
 
         @Override
         protected void onProgressUpdate(Void... v) {

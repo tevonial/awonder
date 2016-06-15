@@ -99,13 +99,13 @@ public class ResultsFragment extends Fragment {
             } else if (mMode == 2) {
                 mEntries.add(new Entry((float) sums[0], 0));
                 if (sums[0] > 0) {
-                    mLabels.add(getString(R.string.string_no));
+                    mLabels.add(getString(R.string.no));
                 } else {
                     mLabels.add("");
                 }
                 mEntries.add(new Entry((float) sums[1], 1));
                 if (sums[1] > 0) {
-                    mLabels.add(getString(R.string.string_yes));
+                    mLabels.add(getString(R.string.yes));
                 } else {
                     mLabels.add("");
                 }

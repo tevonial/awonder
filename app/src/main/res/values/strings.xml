@@ -1,11 +1,12 @@
 <resources>
-    <!-- App Titles -->
+    <string name="app_name">Awonder</string>
+
+    <!-- Fragment Titles -->
     <string name="results_fragment_title">Poll Results</string>
     <string name="answer_poll_fragment_title">Answer Poll</string>
     <string name="history_fragment_title">History</string>
     <string name="poll_fragment_title">Poll</string>
     <string name="preference_fragment_title">Settings</string>
-    <string name="app_name">Awonder</string>
 
     <!-- Navigation Menu -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -35,7 +36,7 @@
     <string name="pref_det_uid_key">DET_UID</string>
     <string name="pref_det_screen_key">DET_SCREEN</string>
 
-    <!-- Preferences -->
+    <!-- Preference Titles -->
     <string name="pref_det_default_host_title">Default Host</string>
     <string name="pref_det_uid_title">UID</string>
     <string name="pref_det_screen_title">Screen Size</string>
@@ -67,8 +68,8 @@
     <string name="radio_mode_1">Scale</string>
     <string name="radio_mode_2">Yes/No</string>
 
-    <string name="string_no">No</string>
-    <string name="string_yes">Yes</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
 
-    <string name="default_host">http://tevonial.ddns.net/awonder/</string>
+    <string name="default_host">[default]</string>
 </resources>

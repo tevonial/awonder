@@ -4,7 +4,6 @@ import tevonial.awonder.MainActivity;
 import tevonial.awonder.R;
 import tevonial.awonder.dialog.NetworkErrorDialogFragment;
 
-import android.app.Activity;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 
@@ -33,18 +32,18 @@ public class HttpHandler {
     public static boolean sUseDefaultHost;
     public static String sHost;
 
-                              //Request Type          include params  url                  params    expected return keys
-    public static RequestType   GET_GEN_UID =  new RequestType(false, "get_gen_uid.php",   "",       "uid"),
-                                GET_MY_POLL =  new RequestType(true,  "get_state.php",     "poll",   "poll", "mode"),
-                                GET_STATE =    new RequestType(true,  "get_state.php",     "state",  "state"),
-                                GET_COUNT =    new RequestType(true,  "get_state.php",     "count",  "count"),
-                                GET_POLL =     new RequestType(false, "get_poll.php",      "",       "p_uid", "p_poll", "p_mode"),
-                                GET_RESULT =   new RequestType(true,  "get_results.php",   "",       "results"),
+                                //Request Type                 url                  param     expected return keys
+    public static RequestType   GET_GEN_UID =  new RequestType("get_gen_uid.php",   null,     "uid"),
+                                GET_MY_POLL =  new RequestType("get_state.php",     "poll",   "poll", "mode"),
+                                GET_STATE =    new RequestType("get_state.php",     "state",  "state"),
+                                GET_COUNT =    new RequestType("get_state.php",     "count",  "count"),
+                                GET_POLL =     new RequestType("get_poll.php",      null,     "p_uid", "p_poll", "p_mode"),
+                                GET_RESULT =   new RequestType("get_results.php",   null,     "results"),
 
-                                POST_POLL =    new RequestType(false, "post_poll.php",     null),
-                                POST_ANSWER =  new RequestType(false, "post_response.php", null),
-                                POST_STATE =   new RequestType(false, "post_state.php",    null),
-                                SELF_RESPOND = new RequestType(false, "post_self.php",     null);
+                                POST_POLL =    new RequestType("post_poll.php",     null),
+                                POST_ANSWER =  new RequestType("post_response.php", null),
+                                POST_STATE =   new RequestType("post_state.php",    null),
+                                SELF_RESPOND = new RequestType("post_self.php",     null);
 
     public static void setUid(String uid) {
         HttpHandler.sUid = uid;
@@ -67,31 +66,29 @@ public class HttpHandler {
     }
 
     private static class RequestType {
-        private String url;
-        private String params;
+        private String path;
+        private String param;
         private String[] keys;
-        private boolean includeParams;
 
-        public RequestType(boolean includeParams, String url, String params, String... keys) {
-            this.includeParams = includeParams;
-            this.url = url;
-            this.params = params;
+        public RequestType(String path, String param, String... keys) {
+            this.path = path;
+            this.param = param;
             this.keys = keys;
         }
 
         public String getUrl() {
-            String tUrl = HttpHandler.sHost + url;
+            String tUrl = HttpHandler.sHost + path;
 
-            if (includeParams) {
+            if (param != null) {
                 String tUid = (sUid.isEmpty()) ? "" : "uid=" + sUid;
                 int a = (tUid.isEmpty()) ? 0 : 1;
-                a = (params.isEmpty()) ? a : a + 1;
+                a = (param.isEmpty()) ? a : a + 1;
 
                 if (a > 0) {
                     if (a == 1) {
-                        tUrl += "?" + params + tUid;
+                        tUrl += "?" + param + tUid;
                     } else if (a == 2) {
-                        tUrl += "?" + params + "&" + tUid;
+                        tUrl += "?" + param + "&" + tUid;
                     }
                 }
             }
