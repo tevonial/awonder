@@ -31,8 +31,8 @@ public class AnswerPollFragment extends Fragment implements DialogListener<Integ
     private ProgressBar mProgress;
     private LinearLayout mDoneView;
     private Button mButton;
+    private final int mQuota = 5;
 
-    public static int sMax = 5;
     private String mPollPtr;
     private String mPollStr;
     private int mPollMode;
@@ -50,7 +50,7 @@ public class AnswerPollFragment extends Fragment implements DialogListener<Integ
         int state = HttpHandler.getState();
 
         LinearLayout labels = (LinearLayout) view.findViewById(R.id.labels);
-        for (int i = 0; i< sMax; i++) {
+        for (int i = 0; i< mQuota; i++) {
             TextView tick = new TextView(getContext());
             tick.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1f));
             tick.setWidth(0);
@@ -62,11 +62,11 @@ public class AnswerPollFragment extends Fragment implements DialogListener<Integ
         }
 
         if (state > 0) {
-            final int done = sMax - state;
+            final int done = mQuota - state;
             mProgress.post(new Runnable() {
                 @Override
                 public void run() {
-                    mProgress.setProgress((int) (((double) done * 100) / (double) sMax));
+                    mProgress.setProgress((int) (((double) done * 100) / (double) mQuota));
                 }
             });
             mButton.setOnClickListener(new View.OnClickListener() {
@@ -159,8 +159,8 @@ public class AnswerPollFragment extends Fragment implements DialogListener<Integ
                     HttpHandler.setState(state);
 
                     if (state > 0) {
-                        int done = sMax - state;
-                        mProgress.setProgress((int) (((double) done * 100) / (double) sMax));
+                        int done = mQuota - state;
+                        mProgress.setProgress((int) (((double) done * 100) / (double) mQuota));
                         HttpHandler.getJson(HttpHandler.GET_POLL, requestPollHandler); return;
                     } else {
                         onDone();

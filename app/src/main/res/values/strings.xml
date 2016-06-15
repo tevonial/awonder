@@ -69,4 +69,6 @@
 
     <string name="string_no">No</string>
     <string name="string_yes">Yes</string>
+
+    <string name="default_host">http://tevonial.ddns.net/awonder/</string>
 </resources>

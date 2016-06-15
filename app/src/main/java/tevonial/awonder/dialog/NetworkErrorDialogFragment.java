@@ -28,8 +28,9 @@ public class NetworkErrorDialogFragment extends DialogFragment {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                int p = HttpHandler.sHost.indexOf("://") + 3;
-                mHostTextView.setText(HttpHandler.sHost.substring(p));
+                String host = (HttpHandler.sUseDefaultHost ? HttpHandler.sDefaultHost : HttpHandler.sHost);
+                int p = host.indexOf("://") + 3;
+                mHostTextView.setText(host.substring(p));
             }
         });
     }

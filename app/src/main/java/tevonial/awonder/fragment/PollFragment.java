@@ -69,20 +69,18 @@ public class PollFragment extends Fragment implements DialogListener<String> {
             @Override
             public void onResponse(boolean success, String[] s) {
                 if (!success) {
-                    ((MainActivity) getActivity()).switchView(0); return;
+                    MainActivity.switchView(0); return;
                 }
                 int mStatus = Integer.valueOf(s[0]);
-                HttpHandler.setState(mStatus);
                 if (mStatus < 0) {
                     MainActivity.sLoading.setVisibility(ProgressBar.INVISIBLE);
                     mPollView.setVisibility(View.VISIBLE);
 
-                    HttpHandler.getJson(HttpHandler.GET_MYPOLL, new HttpHandler.RequestHandler() {
+                    HttpHandler.getJson(HttpHandler.GET_MY_POLL, new HttpHandler.RequestHandler() {
                                 @Override
                                 public void onResponse(boolean success, String[] s) {
-                                    AnswerPollFragment.sMax = Integer.valueOf(s[0]);
-                                    PollFragment.sPollStr = s[1];
-                                    PollFragment.sPollMode = Integer.valueOf(s[2]);
+                                    PollFragment.sPollStr = s[0];
+                                    PollFragment.sPollMode = Integer.valueOf(s[1]);
                                     mPoll.setText(sPollStr);
                                 }
                             });
@@ -122,7 +120,7 @@ public class PollFragment extends Fragment implements DialogListener<String> {
 
                 int ptr = HistoryFragment.addItem(new HistoryItem(sPollMode, sPollStr, sums, avg, total));
                 ResultsFragment.setPointer(ptr);
-                ((MainActivity) getActivity()).switchView(3);
+                MainActivity.switchView(3);
             }
         };
 
@@ -155,7 +153,7 @@ public class PollFragment extends Fragment implements DialogListener<String> {
                     @Override
                     public void onResponse(boolean success, String[] s) {
                         if (success) {
-                            ((MainActivity) getActivity()).switchView(2);
+                            MainActivity.switchView(2);
                         }
                     }
                 }, obj);

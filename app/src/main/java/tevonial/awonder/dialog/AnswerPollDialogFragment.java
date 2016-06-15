@@ -57,7 +57,7 @@ public class AnswerPollDialogFragment extends DialogFragment {
             mNoButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((AnswerPollFragment) getTargetFragment()).onInput(0, null);
+                    ((DialogListener<Integer>) getTargetFragment()).onInput(0, null);
                     getDialog().dismiss();
                 }
             });
@@ -65,7 +65,7 @@ public class AnswerPollDialogFragment extends DialogFragment {
             mYesButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    ((AnswerPollFragment) getTargetFragment()).onInput(1, null);
+                    ((DialogListener<Integer>) getTargetFragment()).onInput(1, null);
                     getDialog().dismiss();
                 }
             });

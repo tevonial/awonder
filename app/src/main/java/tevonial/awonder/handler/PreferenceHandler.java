@@ -47,7 +47,7 @@ public class PreferenceHandler {
             HttpHandler.testNetwork();
             while (!sUidReady) {
                 try {
-                    HttpHandler.getJson(HttpHandler.GET_UID, initUidHandler);
+                    HttpHandler.getJson(HttpHandler.GET_GEN_UID, initUidHandler);
                     synchronized (mRequestLock) {
                         Log.d("EW", "mRequestLock.wait()");
                         mRequestLock.wait();
@@ -68,18 +68,9 @@ public class PreferenceHandler {
         Log.d("EW", "Read ALL preferences: " + keyStr);
     }
 
-    public static void saveState() {
-        editSharedPreferences(0, state_key, HttpHandler.getState());
-    }
-
-    public static void saveHost() {
-        editSharedPreferences(1, host_key, HttpHandler.sHost);
-        Log.d("EW", "Save preference: " + host_key + ": " + HttpHandler.sHost);
-    }
-
     public static void saveAll() {
         editSharedPreferences(0, state_key, HttpHandler.getState());
-        editSharedPreferences(1, host_key, HttpHandler.sHost);
+        editSharedPreferences(1, host_key,  HttpHandler.sHost);
         Log.d("EW", "Save ALL preferences: " + keyStr);
     }
 

@@ -1,6 +1,7 @@
 package tevonial.awonder.handler;
 
 import tevonial.awonder.MainActivity;
+import tevonial.awonder.R;
 import tevonial.awonder.dialog.NetworkErrorDialogFragment;
 
 import android.app.Activity;
@@ -22,20 +23,19 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class HttpHandler {
-    private static MainActivity sMainActivity;
     private static String sUid = "";
     private static int sState;
     private static final String sSignatureScript = "sig.php";
 
     public static Object sNetLock = new Object();
     public static boolean sNetPause = false;
-    public static String sDefaultHost = "http://everwonder.ddns.net/app/";
+    public static String sDefaultHost = MainActivity.sContext.getString(R.string.default_host);
+    public static boolean sUseDefaultHost;
     public static String sHost;
 
-
-    public static RequestType //Request Type          include params  url                  params    expected return keys
-                                GET_UID =      new RequestType(false, "get_uid.php",       "",       "uid"),
-                                GET_MYPOLL =   new RequestType(true,  "get_state.php",     "inits",  "quota", "poll", "mode"),
+                              //Request Type          include params  url                  params    expected return keys
+    public static RequestType   GET_GEN_UID =  new RequestType(false, "get_gen_uid.php",   "",       "uid"),
+                                GET_MY_POLL =  new RequestType(true,  "get_state.php",     "poll",   "poll", "mode"),
                                 GET_STATE =    new RequestType(true,  "get_state.php",     "state",  "state"),
                                 GET_COUNT =    new RequestType(true,  "get_state.php",     "count",  "count"),
                                 GET_POLL =     new RequestType(false, "get_poll.php",      "",       "p_uid", "p_poll", "p_mode"),
@@ -56,10 +56,6 @@ public class HttpHandler {
 
     public static String getUid() {
         return HttpHandler.sUid;
-    }
-
-    public static void setActivity(Activity a) {
-        HttpHandler.sMainActivity = (MainActivity) a;
     }
 
     public static int getState() {
@@ -175,9 +171,14 @@ public class HttpHandler {
         ConnectivityManager cm = (ConnectivityManager) MainActivity.sContext.getSystemService(MainActivity.sContext.CONNECTIVITY_SERVICE);
         if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
             try {
-                URL url = new URL(sHost + sSignatureScript);
+                URL url = new URL( ((sUseDefaultHost) ? sDefaultHost : sHost) + sSignatureScript);
                 Integer in = Integer.valueOf((new BufferedReader(new InputStreamReader(url.openStream()))).readLine());
-                return (Math.abs((System.currentTimeMillis() / 1000L) - in) < 10);
+                if (Math.abs((System.currentTimeMillis() / 1000L) - in) < 10) {
+                    if (sUseDefaultHost) setHost(sDefaultHost);
+                    return true;
+                } else {
+                    return false;
+                }
             } catch (Exception e) {
                 return false;
             }
@@ -188,20 +189,21 @@ public class HttpHandler {
 
     public static class NetWaitTask extends AsyncTask<Void, Void, Void> {
         private NetworkErrorDialogFragment error;
+        private boolean online;
 
         @Override
         protected Void doInBackground(Void... params) {
             int i = 0;
-            while (!isOnline()) {
+            while (!(online = isOnline())) {
                 if (i++ == 5) {
-                    HttpHandler.setHost(sDefaultHost);
+                    sUseDefaultHost = true;
                     this.error.invalidate();
-                    PreferenceHandler.saveHost();
+                } else if (i == 8) {
+                    break;
                 }
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                }
+                } catch (InterruptedException e) {}
             }
             return null;
         }
@@ -213,10 +215,12 @@ public class HttpHandler {
                 sNetLock.notifyAll();
             }
             this.error.dismiss();
+            if (!online) MainActivity.switchView(5);
         }
 
         @Override
         protected void onPreExecute() {
+            sUseDefaultHost = false;
             synchronized (sNetLock) {
                 sNetPause = true;
             }

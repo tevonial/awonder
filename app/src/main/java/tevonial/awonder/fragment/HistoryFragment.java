@@ -53,7 +53,7 @@ public class HistoryFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ResultsFragment.setPointer(position);
-                ((MainActivity) getActivity()).switchView(-3);
+                MainActivity.switchView(-3);
             }
         });
 
@@ -96,7 +96,7 @@ public class HistoryFragment extends Fragment {
         switch (item.getItemId()) {
             case 0:
                 ResultsFragment.setPointer(position);
-                ((MainActivity) getActivity()).switchView(-3);
+                MainActivity.switchView(-3);
                 break;
             case 1:
                 sHistory.remove(position);

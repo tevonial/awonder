@@ -34,7 +34,7 @@ public class HomeFragment extends Fragment implements HttpHandler.RequestHandler
                 if (mStatus == 0) {
                     (new PollDialogFragment()).show(getActivity().getSupportFragmentManager(), "fragment_dialog_poll");
                 } else {
-                    ((MainActivity) getActivity()).switchView(2);
+                    MainActivity.switchView(2);
                 }
             }
         });
@@ -42,7 +42,7 @@ public class HomeFragment extends Fragment implements HttpHandler.RequestHandler
         mAnswerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity) getActivity()).switchView(1);
+                MainActivity.switchView(1);
             }
         });
 

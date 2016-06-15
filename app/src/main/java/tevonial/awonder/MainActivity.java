@@ -201,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         protected void onPreExecute() {
             sLoading.setVisibility(View.VISIBLE);
             sContext = MainActivity.this;
-            HttpHandler.setActivity(MainActivity.this);
 
             homeFragment = new HomeFragment();
             answerPollFragment = new AnswerPollFragment();
