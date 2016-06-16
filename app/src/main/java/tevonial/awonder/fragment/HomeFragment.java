@@ -13,6 +13,7 @@ import tevonial.awonder.MainActivity;
 import tevonial.awonder.R;
 import tevonial.awonder.dialog.PollDialogFragment;
 import tevonial.awonder.handler.HttpHandler;
+import tevonial.awonder.handler.PreferenceHandler;
 
 public class HomeFragment extends Fragment implements HttpHandler.RequestHandler  {
     private View mMainView;

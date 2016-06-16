@@ -4,8 +4,10 @@ import tevonial.awonder.MainActivity;
 import tevonial.awonder.R;
 import tevonial.awonder.dialog.NetworkErrorDialogFragment;
 
+import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
+import android.view.View;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -32,18 +34,18 @@ public class HttpHandler {
     public static boolean sUseDefaultHost;
     public static String sHost;
 
-                                //Request Type                 url                  param     expected return keys
-    public static RequestType   GET_GEN_UID =  new RequestType("get_gen_uid.php",   null,     "uid"),
-                                GET_MY_POLL =  new RequestType("get_state.php",     "poll",   "poll", "mode"),
-                                GET_STATE =    new RequestType("get_state.php",     "state",  "state"),
-                                GET_COUNT =    new RequestType("get_state.php",     "count",  "count"),
-                                GET_POLL =     new RequestType("get_poll.php",      null,     "p_uid", "p_poll", "p_mode"),
-                                GET_RESULT =   new RequestType("get_results.php",   null,     "results"),
+                                //Request Type                 url                  uid     param     expected return keys
+    public static RequestType   GET_GEN_UID =  new RequestType("get_gen_uid.php",   false,  "",       "uid"),
+                                GET_MY_POLL =  new RequestType("get_state.php",     true,   "poll",   "poll", "mode"),
+                                GET_STATE =    new RequestType("get_state.php",     true,   "state",  "state"),
+                                GET_COUNT =    new RequestType("get_state.php",     true,   "count",  "count"),
+                                GET_POLL =     new RequestType("get_poll.php",      false,  "",       "p_uid", "p_poll", "p_mode"),
+                                GET_RESULT =   new RequestType("get_results.php",   true,   "",       "results"),
 
-                                POST_POLL =    new RequestType("post_poll.php",     null),
-                                POST_ANSWER =  new RequestType("post_response.php", null),
-                                POST_STATE =   new RequestType("post_state.php",    null),
-                                SELF_RESPOND = new RequestType("post_self.php",     null);
+                                POST_POLL =    new RequestType("post_poll.php",     false,  ""),
+                                POST_ANSWER =  new RequestType("post_response.php", false,  ""),
+                                POST_STATE =   new RequestType("post_state.php",    false,  ""),
+                                SELF_RESPOND = new RequestType("post_self.php",     false,  "");
 
     public static void setUid(String uid) {
         HttpHandler.sUid = uid;
@@ -69,31 +71,29 @@ public class HttpHandler {
         private String path;
         private String param;
         private String[] keys;
+        private boolean requireUid;
 
-        public RequestType(String path, String param, String... keys) {
+        public RequestType(String path, boolean requireUid, String param, String... keys) {
             this.path = path;
             this.param = param;
             this.keys = keys;
+            this.requireUid = requireUid;
         }
 
         public String getUrl() {
-            String tUrl = HttpHandler.sHost + path;
+            String url = HttpHandler.sHost + path;
 
-            if (param != null) {
-                String tUid = (sUid.isEmpty()) ? "" : "uid=" + sUid;
-                int a = (tUid.isEmpty()) ? 0 : 1;
-                a = (param.isEmpty()) ? a : a + 1;
+            String uidParam = (requireUid) ? "uid=" + sUid : "";
 
-                if (a > 0) {
-                    if (a == 1) {
-                        tUrl += "?" + param + tUid;
-                    } else if (a == 2) {
-                        tUrl += "?" + param + "&" + tUid;
-                    }
-                }
+            int a = (uidParam.isEmpty()) ? 0 : 1;
+            a += (param.isEmpty()) ? 0 : 1;
+
+            if (a == 1) {
+                url += "?" + param + uidParam;
+            } else if (a == 2) {
+                url += "?" + param + "&" + uidParam;
             }
-
-            return tUrl;
+            return url;
         }
 
         public String[] getKeys() {
@@ -158,14 +158,19 @@ public class HttpHandler {
         VolleyRequestHandler.getInstance(MainActivity.sContext).addToRequestQueue(request);
     }
 
-    public static void testNetwork() {
+    public static void waitForNetwork() {
         if (!isOnline()) {
             (new NetWaitTask()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            synchronized (sNetLock) {
+                try {
+                    sNetLock.wait();
+                } catch (InterruptedException e) {}
+            }
         }
     }
 
     public static boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) MainActivity.sContext.getSystemService(MainActivity.sContext.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) MainActivity.sContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
             try {
                 URL url = new URL( ((sUseDefaultHost) ? sDefaultHost : sHost) + sSignatureScript);
@@ -185,7 +190,7 @@ public class HttpHandler {
     }
 
     public static class NetWaitTask extends AsyncTask<Void, Void, Void> {
-        private NetworkErrorDialogFragment error;
+        private NetworkErrorDialogFragment errorDialog;
         private boolean online;
 
         @Override
@@ -194,7 +199,7 @@ public class HttpHandler {
             while (!(online = isOnline())) {
                 if (i++ == 5) {
                     sUseDefaultHost = true;
-                    this.error.invalidate();
+                    this.errorDialog.invalidate();
                 } else if (i == 8) {
                     break;
                 }
@@ -211,20 +216,21 @@ public class HttpHandler {
                 sNetPause = false;
                 sNetLock.notifyAll();
             }
-            this.error.dismiss();
+            this.errorDialog.dismiss();
             if (!online) MainActivity.switchView(5);
         }
 
         @Override
         protected void onPreExecute() {
+            MainActivity.sLoading.setVisibility(View.INVISIBLE);
             sUseDefaultHost = false;
             synchronized (sNetLock) {
                 sNetPause = true;
             }
             try {
-                this.error = new NetworkErrorDialogFragment();
-                this.error.show(MainActivity.sFragmentManager, "dialog_fragment_network_error");
-                this.error.setCancelable(false);
+                this.errorDialog = new NetworkErrorDialogFragment();
+                this.errorDialog.show(MainActivity.sFragmentManager, "dialog_fragment_network_error");
+                this.errorDialog.setCancelable(false);
             } catch (IllegalStateException e) {}
         }
     }

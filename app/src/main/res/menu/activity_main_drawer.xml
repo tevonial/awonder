@@ -11,7 +11,7 @@
             android:icon="@drawable/ic_pie_chart_black_36dp"
             android:title="@string/nav_history" />
         <item
-            android:id="@+id/nav_setting"
+            android:id="@+id/nav_preferences"
             android:icon="@drawable/ic_extension_black_36dp"
             android:title="@string/nav_settings" />
     </group>

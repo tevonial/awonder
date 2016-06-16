@@ -27,7 +27,6 @@ import tevonial.awonder.fragment.HomeFragment;
 import tevonial.awonder.fragment.PollFragment;
 import tevonial.awonder.fragment.PreferenceFragment;
 import tevonial.awonder.fragment.ResultsFragment;
-import tevonial.awonder.handler.HttpHandler;
 import tevonial.awonder.handler.PreferenceHandler;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -146,13 +145,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.nav_home:
-                switchView(0);
+                switchView(FRAGMENT_HOME);
                 break;
             case R.id.nav_history:
-                switchView(4);
+                switchView(FRAGMENT_HISTORY);
                 break;
-            case R.id.nav_setting:
-                switchView(5);
+            case R.id.nav_preferences:
+                switchView(FRAGMENT_PREFERENCE);
                 break;
         }
 

@@ -38,7 +38,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
     private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            Log.d("EW", "onSharedPreferenceChanged: " + key);
             if (key.equals(mStateKey)) {
                 changeState(mStatePreference.getProgress() - 1);
             } else if (key.equals(mHostKey)) {
@@ -50,7 +49,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
                     host += "/";
                 }
                 if (!host.contains("://")) {
-                    host = "http://" + host;
+                    host = "http://".concat(host);
                 }
                 HttpHandler.setHost(host);
                 mHostPreference.setSummary(host);
@@ -80,7 +79,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
-        // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
 
         mStatePreference = (SeekBarPreference) findPreference(mStateKey);
@@ -113,9 +111,9 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
         String key = preference.getKey();
 
         if (key.equals(mClickPreferenceKeys[0])) {
-            Toast.makeText(getContext(), "Delete history", Toast.LENGTH_SHORT).show();
+
         } else if (key.equals(mClickPreferenceKeys[1])) {
-            Toast.makeText(getContext(), "Delete Uid", Toast.LENGTH_SHORT).show();
+
         } else if (key.equals(mClickPreferenceKeys[2])) {
             AnswerPollDialogFragment mDialog = new AnswerPollDialogFragment();
             mDialog.setTargetFragment(this, 0);
@@ -168,9 +166,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
         HttpHandler.postJson(HttpHandler.SELF_RESPOND, new HttpHandler.RequestHandler() {
             @Override
             public void onResponse(boolean success, String[] s) {
-                if (success) {
-                    Toast.makeText(getContext(), "Self respond success", Toast.LENGTH_SHORT).show();
-                }
+                String text = (success) ? "Respond Success" : "Respond error";
+                Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
             }
         }, obj);
     }

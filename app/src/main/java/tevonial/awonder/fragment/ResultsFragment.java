@@ -66,17 +66,6 @@ public class ResultsFragment extends Fragment {
     }
 
     private class PrepareChartTask extends AsyncTask<Void, Void, Void> {
-        public final int[] CUSTOM_COLORS = {
-                Color.rgb(64, 89, 128),
-                Color.rgb(76, 207, 175),
-                Color.rgb(149, 165, 124),
-                Color.rgb(191, 166, 127),
-                Color.rgb(217, 184, 162),
-                Color.rgb(106, 90, 131),
-                Color.rgb(191, 134, 134),
-                Color.rgb(38, 71, 93),
-                Color.rgb(179, 48, 80),
-                Color.rgb(64, 121, 121)};
 
         @Override
         protected Void doInBackground(Void... v) {
