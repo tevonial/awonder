@@ -7,7 +7,9 @@ import tevonial.awonder.dialog.NetworkErrorDialogFragment;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -19,6 +21,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
@@ -28,10 +31,9 @@ public class HttpHandler {
     private static int sState;
     private static final String sSignatureScript = "sig.php";
 
-    public static Object sNetLock = new Object();
+    public static final Object sNetLock = new Object();
+    public static boolean sOnline = false;
     public static boolean sNetPause = false;
-    public static String sDefaultHost = MainActivity.sContext.getString(R.string.default_host);
-    public static boolean sUseDefaultHost;
     public static String sHost;
 
                                 //Request Type                 url                  uid     param     expected return keys
@@ -53,6 +55,17 @@ public class HttpHandler {
 
     public static void setHost(String host) {
         HttpHandler.sHost = host;
+
+        (new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                HttpHandler.waitForNetwork();
+                if (sUid.isEmpty() && sOnline) {
+                    PreferenceHandler.initUid();
+                }
+                return null;
+            }
+        }).execute();
     }
 
     public static String getUid() {
@@ -83,7 +96,7 @@ public class HttpHandler {
         public String getUrl() {
             String url = HttpHandler.sHost + path;
 
-            String uidParam = (requireUid) ? "uid=" + sUid : "";
+            String uidParam = (requireUid) ? "uid=".concat(sUid) : "";
 
             int a = (uidParam.isEmpty()) ? 0 : 1;
             a += (param.isEmpty()) ? 0 : 1;
@@ -159,13 +172,28 @@ public class HttpHandler {
     }
 
     public static void waitForNetwork() {
-        if (!isOnline()) {
-            (new NetWaitTask()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            synchronized (sNetLock) {
-                try {
-                    sNetLock.wait();
-                } catch (InterruptedException e) {}
+        sOnline = false;
+        if (!HttpHandler.sHost.isEmpty()) {
+            if (!isOnline()) {
+                (new NetWaitTask()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                synchronized (sNetLock) {
+                    try {
+                        sNetLock.wait();
+                    } catch (InterruptedException e) {}
+                }
             }
+        }
+
+        if (!sOnline) {
+            MainActivity.sUiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    MainActivity.sLoading.setVisibility(View.INVISIBLE);
+                    MainActivity.switchView(5);
+                    String toastMessage = (HttpHandler.sHost.isEmpty()) ? "Please enter a host" : "Error connecting to host";
+                    Toast.makeText(MainActivity.sContext, toastMessage, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -173,15 +201,15 @@ public class HttpHandler {
         ConnectivityManager cm = (ConnectivityManager) MainActivity.sContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
             try {
-                URL url = new URL( ((sUseDefaultHost) ? sDefaultHost : sHost) + sSignatureScript);
+                URL url = new URL(sHost + sSignatureScript);
                 Integer in = Integer.valueOf((new BufferedReader(new InputStreamReader(url.openStream()))).readLine());
                 if (Math.abs((System.currentTimeMillis() / 1000L) - in) < 10) {
-                    if (sUseDefaultHost) setHost(sDefaultHost);
+                    sOnline = true;
                     return true;
                 } else {
                     return false;
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 return false;
             }
         } else {
@@ -191,16 +219,12 @@ public class HttpHandler {
 
     public static class NetWaitTask extends AsyncTask<Void, Void, Void> {
         private NetworkErrorDialogFragment errorDialog;
-        private boolean online;
 
         @Override
         protected Void doInBackground(Void... params) {
             int i = 0;
-            while (!(online = isOnline())) {
+            while (!isOnline()) {
                 if (i++ == 5) {
-                    sUseDefaultHost = true;
-                    this.errorDialog.invalidate();
-                } else if (i == 8) {
                     break;
                 }
                 try {
@@ -217,13 +241,13 @@ public class HttpHandler {
                 sNetLock.notifyAll();
             }
             this.errorDialog.dismiss();
-            if (!online) MainActivity.switchView(5);
+            if (!sOnline) MainActivity.switchView(5);
         }
 
         @Override
         protected void onPreExecute() {
             MainActivity.sLoading.setVisibility(View.INVISIBLE);
-            sUseDefaultHost = false;
+            sOnline = false;
             synchronized (sNetLock) {
                 sNetPause = true;
             }

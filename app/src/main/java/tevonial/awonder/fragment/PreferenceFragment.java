@@ -1,6 +1,7 @@
 package tevonial.awonder.fragment;
 
 import android.content.SharedPreferences;
+import android.content.res.ObbInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.EditTextPreference;
@@ -19,6 +20,7 @@ import tevonial.awonder.dialog.AnswerPollDialogFragment;
 import tevonial.awonder.dialog.DialogListener;
 import tevonial.awonder.dialog.PollDialogFragment;
 import tevonial.awonder.handler.HttpHandler;
+import tevonial.awonder.handler.PreferenceHandler;
 import tevonial.awonder.library.SeekBarPreference;
 
 public class PreferenceFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceClickListener, DialogListener<Integer> {
@@ -29,7 +31,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
     private String mScreenSize;
 
     private final String mStateKey = MainActivity.sContext.getString(R.string.pref_state_key),
-                         mHostKey  = MainActivity.sContext.getString(R.string.pref_host_key);
+                         mHostKey  = MainActivity.sContext.getString(R.string.pref_host_key),
+                         mUidKey   = MainActivity.sContext.getString(R.string.pref_uid_key);
 
     private final String mClickPreferenceKeys[] = {MainActivity.sContext.getString(R.string.pref_rem_history_key),
                                                    MainActivity.sContext.getString(R.string.pref_rem_uid_key),
@@ -42,9 +45,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
                 changeState(mStatePreference.getProgress() - 1);
             } else if (key.equals(mHostKey)) {
                 String host = mHostPreference.getText();
-                if (host.isEmpty()) {
-                    host = HttpHandler.sDefaultHost;
-                }
                 if (!host.endsWith("/")) {
                     host += "/";
                 }
@@ -54,6 +54,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
                 HttpHandler.setHost(host);
                 mHostPreference.setSummary(host);
                 mHostPreference.setText(host);
+            } else if (key.equals(mUidKey)) {
+                findPreference(MainActivity.sContext.getString(R.string.pref_det_uid_key)).setSummary(HttpHandler.getUid());
             }
         }
     };
@@ -129,7 +131,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
     }
 
     private void initDetails() {
-        findPreference(MainActivity.sContext.getString(R.string.pref_det_default_host_key)).setSummary(HttpHandler.sDefaultHost);
         findPreference(MainActivity.sContext.getString(R.string.pref_det_uid_key)).setSummary(HttpHandler.getUid());
         findPreference(MainActivity.sContext.getString(R.string.pref_det_screen_key)).setSummary(mScreenSize);
     }

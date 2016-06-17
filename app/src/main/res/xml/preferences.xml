@@ -6,11 +6,6 @@
         app:title="@string/pref_cat_details">
 
         <Preference
-            app:key="@string/pref_det_default_host_key"
-            app:title="@string/pref_det_default_host_title"
-            android:title="s"/>
-
-        <Preference
             app:key="@string/pref_det_uid_key"
             app:title="@string/pref_det_uid_title"/>
 

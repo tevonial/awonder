@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
+import tevonial.awonder.MainActivity;
 import tevonial.awonder.R;
 import tevonial.awonder.handler.HttpHandler;
 
@@ -19,18 +20,9 @@ public class NetworkErrorDialogFragment extends DialogFragment {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         mHostTextView = (TextView) view.findViewById(R.id.host);
-        invalidate();
+        mHostTextView.setText(HttpHandler.sHost);
 
         return view;
     }
 
-    public void invalidate() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                String host = (HttpHandler.sUseDefaultHost ? HttpHandler.sDefaultHost : HttpHandler.sHost);
-                mHostTextView.setText(host);
-            }
-        });
-    }
 }

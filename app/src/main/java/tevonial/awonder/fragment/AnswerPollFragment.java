@@ -124,13 +124,6 @@ public class AnswerPollFragment extends Fragment implements DialogListener<Integ
             mTextSwitcher.setVisibility(View.INVISIBLE);
             mDoneView.setVisibility(View.VISIBLE);
             mButton.setVisibility(View.INVISIBLE);
-            /*mButton.setText(getString(R.string.return_button));
-            mButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ((MainActivity) getActivity()).switchView(0);
-                }
-            });*/
             mPollStr = mPollPtr = null;
         }
     }

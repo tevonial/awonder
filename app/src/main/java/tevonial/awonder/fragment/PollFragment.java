@@ -33,6 +33,7 @@ public class PollFragment extends Fragment implements DialogListener<String> {
     public static int sPollMode;
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_poll, null);
         MainActivity.sCurrentView = MainActivity.FRAGMENT_POLL;
         getActivity().setTitle(getString(R.string.poll_fragment_title));

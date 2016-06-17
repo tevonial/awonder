@@ -13,7 +13,6 @@ import tevonial.awonder.R;
 public class PreferenceHandler {
 
     private static Context sContext = MainActivity.sContext;
-    private static boolean uidReady = false;
     private static Object requestLock = new Object();
 
     private final static String uid_key =   sContext.getString(R.string.pref_uid_key),
@@ -38,11 +37,12 @@ public class PreferenceHandler {
     };
 
     public static void init() {
-        HttpHandler.setHost(sharedPref.getString(host_key, HttpHandler.sDefaultHost));
+        HttpHandler.setHost(sharedPref.getString(host_key, ""));
+        initUid();
+    }
 
-        if (!sharedPref.contains(uid_key)) {
-            HttpHandler.waitForNetwork();
-
+    public static void initUid() {
+        if (!sharedPref.contains(uid_key) && !HttpHandler.sHost.isEmpty()) {
             try {
                 HttpHandler.getJson(HttpHandler.GET_GEN_UID, initUidHandler);
                 synchronized (requestLock) {
@@ -52,6 +52,7 @@ public class PreferenceHandler {
         }
 
         HttpHandler.setUid(sharedPref.getString(uid_key, ""));
+        MainActivity.initHomeFragment = !HttpHandler.getUid().isEmpty();
     }
 
     public static void saveAll() {

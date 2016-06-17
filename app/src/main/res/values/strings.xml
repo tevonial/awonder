@@ -70,6 +70,4 @@
 
     <string name="no">No</string>
     <string name="yes">Yes</string>
-
-    <string name="default_host">[default]</string>
 </resources>

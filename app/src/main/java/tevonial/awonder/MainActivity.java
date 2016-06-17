@@ -5,9 +5,12 @@ import android.content.Context;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.Display;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -27,14 +30,17 @@ import tevonial.awonder.fragment.HomeFragment;
 import tevonial.awonder.fragment.PollFragment;
 import tevonial.awonder.fragment.PreferenceFragment;
 import tevonial.awonder.fragment.ResultsFragment;
+import tevonial.awonder.handler.HttpHandler;
 import tevonial.awonder.handler.PreferenceHandler;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     public static Context sContext;
+    public static Handler sUiHandler;
     public static ProgressBar sLoading;
     public static int sCurrentView = 0;
     public static Fragment homeFragment, answerPollFragment, pollFragment, resultsFragment, historyFragment, preferenceFragment;
     public static FragmentManager sFragmentManager;
+    public static boolean initHomeFragment;
     public static int FRAGMENT_HOME = 0, FRAGMENT_ANSWER_POLL = 1, FRAGMENT_POLL = 2,
                       FRAGMENT_RESULTS = 3, FRAGMENT_HISTORY = 4, FRAGMENT_PREFERENCE = 5;
 
@@ -122,6 +128,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
+            if (initHomeFragment) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content, homeFragment).commit();
+            }
         }
     }
 
@@ -191,15 +201,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ((PreferenceFragment) preferenceFragment).setScreenSize(size.x, size.y);
 
             PreferenceHandler.init();
-
             HistoryFragment.init();
+
             return null;
         }
 
         @Override
         protected void onPreExecute() {
             sLoading.setVisibility(View.VISIBLE);
-            sContext = MainActivity.this;
+            sContext = getApplicationContext();
+            sUiHandler = new Handler(Looper.getMainLooper());
 
             homeFragment = new HomeFragment();
             answerPollFragment = new AnswerPollFragment();
@@ -212,12 +223,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for (Fragment f : fragments) {
                 f.setRetainInstance(true);
             }
+
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.content, homeFragment).commit();
+            if (initHomeFragment) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.content, homeFragment).commit();
+            }
         }
     }
 }
