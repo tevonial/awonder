@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //endregion
 
     public static void switchView(int view) {
-        if (view == FRAGMENT_PREFERENCE) { mInitializing = true; }
+        if (!HttpHandler.sOnline && view != FRAGMENT_HOME) { mInitializing = true; }
 
         if (view != sCurrentView) {
 

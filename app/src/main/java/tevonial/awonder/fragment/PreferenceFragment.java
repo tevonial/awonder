@@ -39,7 +39,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (key.equals(mStateKey)) {
-                //changeState(mStatePreference.getProgress() - 1);
+                changeState(mStatePreference.getProgress() - 1);
             } else if (key.equals(mHostKey)) {
                 String host = mHostPreference.getText();
                 if (!host.endsWith("/")) {
