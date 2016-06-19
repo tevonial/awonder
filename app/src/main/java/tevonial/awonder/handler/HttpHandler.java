@@ -27,7 +27,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class HttpHandler {
-    private static String sUid = "";
+    private static String sUid;
     private static int sState;
     private static final String sSignatureScript = "sig.php";
 
@@ -61,11 +61,12 @@ public class HttpHandler {
             protected Void doInBackground(Void... params) {
                 HttpHandler.waitForNetwork();
                 if (sUid.isEmpty() && sOnline) {
+                    Log.d("[aw]", "apparent change");
                     PreferenceHandler.initUid();
                 }
                 return null;
             }
-        }).execute();
+        }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public static String getUid() {
@@ -78,6 +79,10 @@ public class HttpHandler {
 
     public static void setState(int state) {
         sState = state;
+    }
+
+    public static boolean isReady() {
+        return (!sUid.isEmpty());
     }
 
     private static class RequestType {
@@ -121,7 +126,13 @@ public class HttpHandler {
     private static void onError(RequestHandler rh) {
         if (!sNetPause) {
             rh.onResponse(false, null);
-            (new NetWaitTask()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            (new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    waitForNetwork();
+                    return null;
+                }
+            }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
     }
 
@@ -241,12 +252,19 @@ public class HttpHandler {
                 sNetLock.notifyAll();
             }
             this.errorDialog.dismiss();
-            if (!sOnline) MainActivity.switchView(5);
+
+            if (!sOnline) { MainActivity.switchView(5); }
         }
 
         @Override
         protected void onPreExecute() {
-            MainActivity.sLoading.setVisibility(View.INVISIBLE);
+            MainActivity.sUiHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    MainActivity.sLoading.setVisibility(View.INVISIBLE);
+                }
+            });
+
             sOnline = false;
             synchronized (sNetLock) {
                 sNetPause = true;

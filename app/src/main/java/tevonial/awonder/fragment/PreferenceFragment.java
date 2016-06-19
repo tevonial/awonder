@@ -1,13 +1,11 @@
 package tevonial.awonder.fragment;
 
 import android.content.SharedPreferences;
-import android.content.res.ObbInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -18,7 +16,6 @@ import tevonial.awonder.MainActivity;
 import tevonial.awonder.R;
 import tevonial.awonder.dialog.AnswerPollDialogFragment;
 import tevonial.awonder.dialog.DialogListener;
-import tevonial.awonder.dialog.PollDialogFragment;
 import tevonial.awonder.handler.HttpHandler;
 import tevonial.awonder.handler.PreferenceHandler;
 import tevonial.awonder.library.SeekBarPreference;
@@ -42,7 +39,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
             if (key.equals(mStateKey)) {
-                changeState(mStatePreference.getProgress() - 1);
+                //changeState(mStatePreference.getProgress() - 1);
             } else if (key.equals(mHostKey)) {
                 String host = mHostPreference.getText();
                 if (!host.endsWith("/")) {
@@ -56,6 +53,15 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
                 mHostPreference.setText(host);
             } else if (key.equals(mUidKey)) {
                 findPreference(MainActivity.sContext.getString(R.string.pref_det_uid_key)).setSummary(HttpHandler.getUid());
+                HttpHandler.getJson(HttpHandler.GET_STATE, new HttpHandler.RequestHandler() {
+                    @Override
+                    public void onResponse(boolean success, String[] s) {
+                        if (success) {
+                            HttpHandler.setState(Integer.valueOf(s[0]));
+                            mStatePreference.setSummary(s[0]);
+                        }
+                    }
+                });
             }
         }
     };
@@ -115,7 +121,8 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
         if (key.equals(mClickPreferenceKeys[0])) {
 
         } else if (key.equals(mClickPreferenceKeys[1])) {
-
+            HttpHandler.setUid("");
+            PreferenceHandler.removeUid();
         } else if (key.equals(mClickPreferenceKeys[2])) {
             AnswerPollDialogFragment mDialog = new AnswerPollDialogFragment();
             mDialog.setTargetFragment(this, 0);

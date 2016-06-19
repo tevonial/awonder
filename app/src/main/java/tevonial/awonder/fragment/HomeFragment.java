@@ -1,5 +1,6 @@
 package tevonial.awonder.fragment;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -29,26 +30,47 @@ public class HomeFragment extends Fragment implements HttpHandler.RequestHandler
         mAskButton = (Button) view.findViewById(R.id.ask);
         mAnswerButton = (Button) view.findViewById(R.id.answer);
 
-        mAskButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mStatus == 0) {
-                    (new PollDialogFragment()).show(getActivity().getSupportFragmentManager(), "fragment_dialog_poll");
-                } else {
-                    MainActivity.switchView(2);
+        mMainView.setVisibility(View.INVISIBLE);
+
+        if (!MainActivity.isInitializing()) {
+            mAskButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mStatus == 0) {
+                        (new PollDialogFragment()).show(getActivity().getSupportFragmentManager(), "fragment_dialog_poll");
+                    } else {
+                        MainActivity.switchView(2);
+                    }
                 }
-            }
-        });
+            });
 
-        mAnswerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.switchView(1);
-            }
-        });
+            mAnswerButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MainActivity.switchView(1);
+                }
+            });
 
-        MainActivity.sLoading.setVisibility(View.VISIBLE);
-        HttpHandler.getJson(HttpHandler.GET_STATE, this);
+            MainActivity.sLoading.setVisibility(View.VISIBLE);
+
+            if (!HttpHandler.isReady()) {
+                (new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        PreferenceHandler.initUid();
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        HttpHandler.getJson(HttpHandler.GET_STATE, HomeFragment.this);
+                    }
+                }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            } else {
+                HttpHandler.getJson(HttpHandler.GET_STATE, this);
+            }
+
+        }
 
         return view;
     }

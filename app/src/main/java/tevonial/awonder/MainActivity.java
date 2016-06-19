@@ -40,13 +40,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static int sCurrentView = 0;
     public static Fragment homeFragment, answerPollFragment, pollFragment, resultsFragment, historyFragment, preferenceFragment;
     public static FragmentManager sFragmentManager;
-    public static boolean initHomeFragment;
     public static int FRAGMENT_HOME = 0, FRAGMENT_ANSWER_POLL = 1, FRAGMENT_POLL = 2,
                       FRAGMENT_RESULTS = 3, FRAGMENT_HISTORY = 4, FRAGMENT_PREFERENCE = 5;
 
     private boolean mUpNavEnabled;
     private ActionBarDrawerToggle mToggle;
     private DrawerLayout mDrawer;
+    private static boolean mInitializing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +85,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (isFinishing()) {
             PreferenceHandler.saveAll();
         }
+    }
+
+    public static boolean isInitializing() {
+        return mInitializing;
     }
 
     //region Navigation and Menu
@@ -128,10 +132,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-            if (initHomeFragment) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content, homeFragment).commit();
-            }
         }
     }
 
@@ -172,8 +172,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //endregion
 
     public static void switchView(int view) {
+        if (view == FRAGMENT_PREFERENCE) { mInitializing = true; }
+
         if (view != sCurrentView) {
-            FragmentTransaction transaction = sFragmentManager.beginTransaction();
 
             if (view >= 0) {
                 sFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -183,15 +184,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             if (view > 0) {
                 Fragment[] fragments = {homeFragment, answerPollFragment, pollFragment, resultsFragment, historyFragment, preferenceFragment};
+                FragmentTransaction transaction = sFragmentManager.beginTransaction();
                 transaction.replace(R.id.content, fragments[view]);
                 transaction.addToBackStack(null);
+                transaction.commit();
             }
 
-            transaction.commit();
         }
+
+        mInitializing  = false;
     }
 
-    private class InitTask extends AsyncTask<Void, Void, Void> {
+
+    public class InitTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... params) {
@@ -208,8 +213,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPreExecute() {
+            mInitializing = true;
             sLoading.setVisibility(View.VISIBLE);
-            sContext = getApplicationContext();
+            sContext = MainActivity.this;
             sUiHandler = new Handler(Looper.getMainLooper());
 
             homeFragment = new HomeFragment();
@@ -228,10 +234,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if (initHomeFragment) {
-                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                transaction.replace(R.id.content, homeFragment).commit();
-            }
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.content, homeFragment).commit();
+            mInitializing = false;
         }
     }
 }

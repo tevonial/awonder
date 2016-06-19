@@ -11,7 +11,6 @@ import tevonial.awonder.MainActivity;
 import tevonial.awonder.R;
 
 public class PreferenceHandler {
-
     private static Context sContext = MainActivity.sContext;
     private static Object requestLock = new Object();
 
@@ -52,12 +51,15 @@ public class PreferenceHandler {
         }
 
         HttpHandler.setUid(sharedPref.getString(uid_key, ""));
-        MainActivity.initHomeFragment = !HttpHandler.getUid().isEmpty();
     }
 
     public static void saveAll() {
         editSharedPreferences(0, state_key, HttpHandler.getState());
         editSharedPreferences(1, host_key,  HttpHandler.sHost);
+    }
+
+    public static void removeUid() {
+        sharedPref.edit().remove(uid_key).apply();
     }
 
     private static void editSharedPreferences(int type, String key, Object value) {
