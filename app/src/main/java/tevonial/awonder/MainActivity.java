@@ -7,10 +7,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Display;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import tevonial.awonder.fragment.AnswerPollFragment;
 import tevonial.awonder.fragment.HistoryFragment;
@@ -40,13 +41,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static int sCurrentView = 0;
     public static Fragment homeFragment, answerPollFragment, pollFragment, resultsFragment, historyFragment, preferenceFragment;
     public static FragmentManager sFragmentManager;
+    public static CoordinatorLayout sRootView;
     public static int FRAGMENT_HOME = 0, FRAGMENT_ANSWER_POLL = 1, FRAGMENT_POLL = 2,
                       FRAGMENT_RESULTS = 3, FRAGMENT_HISTORY = 4, FRAGMENT_PREFERENCE = 5;
 
     private boolean mUpNavEnabled;
     private ActionBarDrawerToggle mToggle;
     private DrawerLayout mDrawer;
-    private static boolean mInitializing;
+    private static boolean mAllowCreateHome = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
+        sRootView = (CoordinatorLayout) findViewById(R.id.root);
         sLoading = (ProgressBar) findViewById(R.id.main_loading);
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mToggle = new ActionBarDrawerToggle(this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -87,8 +90,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    public static boolean isInitializing() {
-        return mInitializing;
+    public static boolean allowCreateHome() {
+        return mAllowCreateHome;
     }
 
     //region Navigation and Menu
@@ -172,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //endregion
 
     public static void switchView(int view) {
-        if (!HttpHandler.sOnline && view != FRAGMENT_HOME) { mInitializing = true; }
+        if (!HttpHandler.sOnline && view != FRAGMENT_HOME) { mAllowCreateHome = false; }
 
         if (view != sCurrentView) {
 
@@ -192,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         }
 
-        mInitializing  = false;
+        mAllowCreateHome = true;
     }
 
 
@@ -213,8 +216,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPreExecute() {
-            mInitializing = true;
-            sLoading.setVisibility(View.VISIBLE);
             sContext = MainActivity.this;
             sUiHandler = new Handler(Looper.getMainLooper());
 
@@ -236,7 +237,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         protected void onPostExecute(Void aVoid) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.content, homeFragment).commit();
-            mInitializing = false;
+            if (!HttpHandler.hasHost()) {
+                switchView(5);
+                Toast.makeText(MainActivity.sContext, "Please enter a host", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

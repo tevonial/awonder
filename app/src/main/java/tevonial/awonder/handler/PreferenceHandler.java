@@ -36,12 +36,12 @@ public class PreferenceHandler {
     };
 
     public static void init() {
-        HttpHandler.setHost(sharedPref.getString(host_key, ""));
+        HttpHandler.sHost = sharedPref.getString(host_key, "");
         initUid();
     }
 
     public static void initUid() {
-        if (!sharedPref.contains(uid_key) && !HttpHandler.sHost.isEmpty()) {
+        if (!sharedPref.contains(uid_key) && HttpHandler.hasHost()) {
             try {
                 HttpHandler.getJson(HttpHandler.GET_GEN_UID, initUidHandler);
                 synchronized (requestLock) {

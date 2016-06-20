@@ -12,6 +12,7 @@ public class VolleyRequestHandler {
     private static VolleyRequestHandler mInstance;
     private RequestQueue mRequestQueue;
     private static Context mCtx;
+    private Request mLastRequest;
 
     private VolleyRequestHandler(Context context) {
         mCtx = context;
@@ -33,10 +34,15 @@ public class VolleyRequestHandler {
     }
 
     public <T> void addToRequestQueue(Request<T> req) {
+        mLastRequest = req;
         if (URLUtil.isValidUrl(req.getUrl())) {
             getRequestQueue().add(req);
         } else {
             req.deliverError(new VolleyError());
         }
+    }
+
+    public void retryLastRequest() {
+        getRequestQueue().add(mLastRequest);
     }
 }
