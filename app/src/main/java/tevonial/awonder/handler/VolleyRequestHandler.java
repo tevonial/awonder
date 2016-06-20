@@ -1,6 +1,7 @@
 package tevonial.awonder.handler;
 
 import android.content.Context;
+import android.util.Patterns;
 import android.webkit.URLUtil;
 
 import com.android.volley.Request;
@@ -35,7 +36,7 @@ public class VolleyRequestHandler {
 
     public <T> void addToRequestQueue(Request<T> req) {
         mLastRequest = req;
-        if (URLUtil.isValidUrl(req.getUrl())) {
+        if (Patterns.WEB_URL.matcher(req.getUrl()).matches()) {
             getRequestQueue().add(req);
         } else {
             req.deliverError(new VolleyError());

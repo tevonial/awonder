@@ -49,8 +49,13 @@
     <string name="pref_self_respond_title">Self Respond</string>
 
     <!-- Network Error -->
-    <string name="net_error_title">Network Error</string>
-    <string name="net_error_message">Attempting to reach server</string>
+    <string name="net_error_dialog_title">Network Error</string>
+    <string name="net_error_dialog_message">Attempting to reach server</string>
+    <string name="net_error_1_message">Cannot reach server</string>
+    <string name="net_error_2_message">No internet connection</string>
+    <string name="net_error_3_message">Invalid URL</string>
+    <string name="net_error_edit">EDIT</string>
+    <string name="net_error_retry">RETRY</string>
 
     <!-- Buttons -->
     <string name="ok_button">Okay</string>

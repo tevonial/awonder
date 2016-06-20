@@ -6,7 +6,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.util.Patterns;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -24,7 +26,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
 
     private SeekBarPreference mStatePreference;
     private EditTextPreference mHostPreference;
-    private Preference mSelfRespondPreference;
     private String mScreenSize;
 
     private final String mStateKey = MainActivity.sContext.getString(R.string.pref_state_key),
@@ -41,14 +42,17 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
             if (key.equals(mStateKey)) {
                 changeState(mStatePreference.getProgress() - 1);
             } else if (key.equals(mHostKey)) {
-                String host = mHostPreference.getText();
-                if (!host.endsWith("/")) {
-                    host += "/";
+                String host = mHostPreference.getText().toLowerCase();
+
+                if (host.isEmpty()) {
+                    HttpHandler.sHost = host;
+                } else {
+                    if (!host.startsWith("http://")) {
+                        host = "http://" + host;
+                    }
+                    HttpHandler.setHost(host);
                 }
-                if (!host.contains("://")) {
-                    host = "http://".concat(host);
-                }
-                HttpHandler.setHost(host);
+
                 mHostPreference.setSummary(host);
                 mHostPreference.setText(host);
             } else if (key.equals(mUidKey)) {
@@ -96,9 +100,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
 
         mHostPreference = (EditTextPreference) findPreference(mHostKey);
         mHostPreference.setSummary(HttpHandler.sHost);
-
-        mSelfRespondPreference = findPreference(mClickPreferenceKeys[2]);
-        mSelfRespondPreference.setEnabled(HttpHandler.getState() == -1);
 
         for (String key : mClickPreferenceKeys) {
             findPreference(key).setOnPreferenceClickListener(this);
@@ -156,7 +157,6 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
                 Toast.makeText(MainActivity.sContext, text, Toast.LENGTH_SHORT).show();
                 if (success) {
                     mStatePreference.setSummary(String.valueOf(state));
-                    mSelfRespondPreference.setEnabled(state == -1);
                 }
             }
         }, obj);

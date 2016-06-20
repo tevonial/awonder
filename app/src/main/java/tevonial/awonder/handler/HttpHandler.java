@@ -1,13 +1,17 @@
 package tevonial.awonder.handler;
 
 import tevonial.awonder.MainActivity;
+import tevonial.awonder.R;
 import tevonial.awonder.dialog.NetworkErrorDialogFragment;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
+import android.webkit.URLUtil;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -27,8 +31,8 @@ import java.util.ArrayList;
 public class HttpHandler {
     private static String sUid;
     private static int sState;
-    private static final String sSignatureScript = "sig.php";
     private static boolean mNetworkConnected = true;
+    private static boolean mValidUrl;
     private static Snackbar errorSnackBar;
 
     public static final Object sNetLock = new Object();
@@ -37,7 +41,9 @@ public class HttpHandler {
     public static String sHost;
 
                                 //Request Type                 url                  uid     param     expected return keys
-    public static RequestType   GET_GEN_UID =  new RequestType("get_gen_uid.php",   false,  "",       "uid"),
+    public static RequestType   GET_SIG =      new RequestType("sig.php",           false,  ""),
+
+                                GET_GEN_UID =  new RequestType("get_gen_uid.php",   false,  "",       "uid"),
                                 GET_MY_POLL =  new RequestType("get_state.php",     true,   "poll",   "poll", "mode"),
                                 GET_STATE =    new RequestType("get_state.php",     true,   "state",  "state"),
                                 GET_COUNT =    new RequestType("get_state.php",     true,   "count",  "count"),
@@ -55,6 +61,9 @@ public class HttpHandler {
 
     public static void setHost(String host) {
         HttpHandler.sHost = host;
+        try {
+            errorSnackBar.dismiss();
+        } catch (NullPointerException e) {}
 
         (new AsyncTask<Void, Void, Void>() {
             @Override
@@ -110,7 +119,12 @@ public class HttpHandler {
         }
 
         public String getUrl() {
-            String url = HttpHandler.sHost + path;
+            String url = HttpHandler.sHost;
+            if (!url.endsWith("/")) {
+                url += "/" + path;
+            } else {
+                url += path;
+            }
 
             String uidParam = (requireUid) ? "uid=".concat(sUid) : "";
 
@@ -199,10 +213,10 @@ public class HttpHandler {
     }
 
     public static void waitForNetwork() {
-        sOnline = false;
+        sOnline = false; mValidUrl = true;
         if (HttpHandler.hasHost()) {
             if (!isOnline()) {
-                if (mNetworkConnected) {
+                if (mNetworkConnected && mValidUrl) {
                     (new NetWaitTask()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     synchronized (sNetLock) {
                         try {
@@ -219,19 +233,28 @@ public class HttpHandler {
                 @Override
                 public void run() {
                     MainActivity.sLoading.setVisibility(View.INVISIBLE);
-                    String errorText = (mNetworkConnected) ? "Cannot reach server" : "No internet connection";
-                    String actionText = (mNetworkConnected) ? "EDIT" : "RETRY";
-                    errorSnackBar = Snackbar.make(MainActivity.sRootView, errorText, Snackbar.LENGTH_INDEFINITE);
-                    errorSnackBar.setAction(actionText, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (mNetworkConnected) {
+
+                    if (mNetworkConnected) {
+                        if (mValidUrl) {
+                            errorSnackBar = Snackbar.make(MainActivity.sRootView, MainActivity.sContext.getString(R.string.net_error_1_message), Snackbar.LENGTH_INDEFINITE);
+                        } else {
+                            errorSnackBar = Snackbar.make(MainActivity.sRootView, MainActivity.sContext.getString(R.string.net_error_3_message), Snackbar.LENGTH_INDEFINITE);
+                        }
+                        errorSnackBar.setAction(MainActivity.sContext.getString(R.string.net_error_edit), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
                                 MainActivity.switchView(5);
-                            } else {
+                            }
+                        });
+                    } else {
+                        errorSnackBar = Snackbar.make(MainActivity.sRootView, MainActivity.sContext.getString(R.string.net_error_2_message), Snackbar.LENGTH_INDEFINITE);
+                        errorSnackBar.setAction(MainActivity.sContext.getString(R.string.net_error_retry), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
                                 VolleyRequestHandler.getInstance(MainActivity.sContext).retryLastRequest();
                             }
-                        }
-                    });
+                        });
+                    }
 
                     errorSnackBar.show();
                 }
@@ -244,7 +267,12 @@ public class HttpHandler {
         if (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting()) {
             mNetworkConnected = true;
             try {
-                URL url = new URL(sHost + sSignatureScript);
+                URL url = new URL(GET_SIG.getUrl());
+                if (!Patterns.WEB_URL.matcher(url.toString()).matches()) {
+                    mValidUrl = false;
+                    return false;
+                }
+
                 Integer in = Integer.valueOf((new BufferedReader(new InputStreamReader(url.openStream()))).readLine());
                 if (Math.abs((System.currentTimeMillis() / 1000L) - in) < 10) {
                     sOnline = true;

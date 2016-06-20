@@ -2,25 +2,33 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <EditTextPreference
+        app:key="@string/pref_host_key"
+        app:title="@string/pref_host_title" />
+
+    <Preference
+        app:key="@string/pref_rem_history_key"
+        app:title="@string/pref_rem_history_title" />
+
     <PreferenceCategory
         app:title="@string/pref_cat_details">
+
+        <Preference
+            app:key="@string/pref_det_screen_key"
+            app:title="@string/pref_det_screen_title"/>
 
         <Preference
             app:key="@string/pref_det_uid_key"
             app:title="@string/pref_det_uid_title"/>
 
         <Preference
-            app:key="@string/pref_det_screen_key"
-            app:title="@string/pref_det_screen_title"/>
+            app:key="@string/pref_rem_uid_key"
+            app:title="@string/pref_rem_uid_title" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
         app:title="@string/pref_cat_dev">
-
-        <EditTextPreference
-            app:key="@string/pref_host_key"
-            app:title="@string/pref_host_title" />
 
         <!--suppress AndroidElementNotAllowed -->
         <tevonial.awonder.library.SeekBarPreference
@@ -33,19 +41,6 @@
         <Preference
             app:key="@string/pref_self_respond_key"
             app:title="@string/pref_self_respond_title" />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        app:title="@string/pref_cat_delete">
-
-        <Preference
-            app:key="@string/pref_rem_history_key"
-            app:title="@string/pref_rem_history_title" />
-
-        <Preference
-            app:key="@string/pref_rem_uid_key"
-            app:title="@string/pref_rem_uid_title" />
 
     </PreferenceCategory>
 
