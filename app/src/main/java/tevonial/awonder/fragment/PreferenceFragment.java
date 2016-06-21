@@ -6,9 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.util.Patterns;
 import android.view.View;
-import android.webkit.URLUtil;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -44,14 +42,12 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
             } else if (key.equals(mHostKey)) {
                 String host = mHostPreference.getText().toLowerCase();
 
-                if (host.isEmpty()) {
-                    HttpHandler.sHost = host;
-                } else {
+                if (!host.isEmpty()) {
                     if (!host.startsWith("http://")) {
                         host = "http://" + host;
                     }
-                    HttpHandler.setHost(host);
                 }
+                HttpHandler.setHost(host);
 
                 mHostPreference.setSummary(host);
                 mHostPreference.setText(host);
@@ -99,7 +95,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
         mStatePreference.setProgress(HttpHandler.getState()+1);
 
         mHostPreference = (EditTextPreference) findPreference(mHostKey);
-        mHostPreference.setSummary(HttpHandler.sHost);
+        mHostPreference.setSummary(HttpHandler.getHost());
 
         for (String key : mClickPreferenceKeys) {
             findPreference(key).setOnPreferenceClickListener(this);

@@ -2,9 +2,7 @@ package tevonial.awonder.handler;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 
 
 import tevonial.awonder.MainActivity;
@@ -36,7 +34,7 @@ public class PreferenceHandler {
     };
 
     public static void init() {
-        HttpHandler.sHost = sharedPref.getString(host_key, "");
+        HttpHandler.setHost(sharedPref.getString(host_key, ""));
         initUid();
     }
 
@@ -55,7 +53,7 @@ public class PreferenceHandler {
 
     public static void saveAll() {
         editSharedPreferences(0, state_key, HttpHandler.getState());
-        editSharedPreferences(1, host_key,  HttpHandler.sHost);
+        editSharedPreferences(1, host_key,  HttpHandler.getHost());
     }
 
     public static void removeUid() {
