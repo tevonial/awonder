@@ -50,22 +50,7 @@ public class HomeFragment extends Fragment implements HttpHandler.RequestHandler
 
             MainActivity.sLoading.setVisibility(View.VISIBLE);
 
-            if (!HttpHandler.hasUid()) {
-                (new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        PreferenceHandler.initUid();
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        HttpHandler.requestGetJson(HttpHandler.GET_STATE, HomeFragment.this);
-                    }
-                }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            } else {
-                HttpHandler.requestGetJson(HttpHandler.GET_STATE, this);
-            }
+            HttpHandler.requestGetJson(HttpHandler.GET_STATE, this);
 
             return view;
         } else {

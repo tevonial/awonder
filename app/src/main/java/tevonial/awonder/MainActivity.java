@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActionBarDrawerToggle mToggle;
     private DrawerLayout mDrawer;
     private static boolean mAllowCreateHome = true;
-    private static boolean mErrorShown;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //endregion
 
     public static void switchView(int view) {
-        if (!HttpHandler.isOnline() && view != FRAGMENT_HOME) { mAllowCreateHome = false; }
+        if (view != FRAGMENT_HOME) { mAllowCreateHome = false; }
 
         if (view != sCurrentView) {
 
@@ -205,12 +204,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected Void doInBackground(Void... params) {
-            Display display = getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-            ((PreferenceFragment) preferenceFragment).setScreenSize(size.x, size.y);
-
-            PreferenceHandler.init();
+            PreferenceHandler.initHost();
             HistoryFragment.init();
 
             return null;

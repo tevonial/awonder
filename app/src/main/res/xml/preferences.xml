@@ -7,25 +7,21 @@
         app:title="@string/pref_host_title" />
 
     <Preference
+        app:key="@string/pref_uid_key"
+        app:title="@string/pref_uid_title"/>
+
+    <Preference
         app:key="@string/pref_rem_history_key"
         app:title="@string/pref_rem_history_title" />
 
-    <PreferenceCategory
+    <!--PreferenceCategory
         app:title="@string/pref_cat_details">
 
         <Preference
             app:key="@string/pref_det_screen_key"
             app:title="@string/pref_det_screen_title"/>
 
-        <Preference
-            app:key="@string/pref_det_uid_key"
-            app:title="@string/pref_det_uid_title"/>
-
-        <Preference
-            app:key="@string/pref_rem_uid_key"
-            app:title="@string/pref_rem_uid_title" />
-
-    </PreferenceCategory>
+    </PreferenceCategory-->
 
     <PreferenceCategory
         app:title="@string/pref_cat_dev">
@@ -41,6 +37,18 @@
         <Preference
             app:key="@string/pref_self_respond_key"
             app:title="@string/pref_self_respond_title" />
+
+        <Preference
+            app:key="@string/pref_rem_host_key"
+            app:title="@string/pref_rem_host_title" />
+
+        <Preference
+            app:key="@string/pref_rem_uid_key"
+            app:title="@string/pref_rem_uid_title" />
+
+        <Preference
+            app:key="@string/pref_gen_uid_key"
+            app:title="@string/pref_gen_uid_title" />
 
     </PreferenceCategory>
 

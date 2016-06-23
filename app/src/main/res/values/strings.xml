@@ -29,23 +29,20 @@
     <string name="pref_host_key">HOST</string>
 
     <string name="pref_rem_uid_key">REM_UID</string>
+    <string name="pref_gen_uid_key">GEN_UID</string>
+    <string name="pref_rem_host_key">REM_HOST</string>
     <string name="pref_rem_history_key">REM_HISTORY</string>
     <string name="pref_self_respond_key">SELF_RESPOND</string>
 
-    <string name="pref_det_default_host_key">DET_DEFAULT_HOST</string>
-    <string name="pref_det_uid_key">DET_UID</string>
-    <string name="pref_det_screen_key">DET_SCREEN</string>
-
     <!-- Preference Titles -->
-    <string name="pref_det_default_host_title">Default Host</string>
-    <string name="pref_det_uid_title">UID</string>
-    <string name="pref_det_screen_title">Screen Size</string>
-
+    <string name="pref_uid_title">UID</string>
     <string name="pref_state_title">State</string>
     <string name="pref_host_title">Host</string>
 
-    <string name="pref_rem_uid_title">Remove stored identifier</string>
-    <string name="pref_rem_history_title">Remove stored history</string>
+    <string name="pref_rem_uid_title">Clear UID</string>
+    <string name="pref_gen_uid_title">Fetch UID</string>
+    <string name="pref_rem_host_title">Clear Host</string>
+    <string name="pref_rem_history_title">Clear History</string>
     <string name="pref_self_respond_title">Self Respond</string>
 
     <!-- Network Error -->

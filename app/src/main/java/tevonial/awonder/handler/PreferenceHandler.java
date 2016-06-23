@@ -3,24 +3,23 @@ package tevonial.awonder.handler;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.preference.PreferenceManager;
+import android.util.Log;
 
 
 import tevonial.awonder.MainActivity;
 import tevonial.awonder.R;
 
 public class PreferenceHandler {
-    private static Context sContext = MainActivity.sContext;
     private static Object requestLock = new Object();
 
-    private final static String KEY_UID =   sContext.getString(R.string.pref_uid_key),
-                                KEY_STATE = sContext.getString(R.string.pref_state_key),
-                                KEY_HOST =  sContext.getString(R.string.pref_host_key);
+    public final static String KEY_UID =   MainActivity.sContext.getString(R.string.pref_uid_key),
+                               KEY_STATE = MainActivity.sContext.getString(R.string.pref_state_key),
+                               KEY_HOST =  MainActivity.sContext.getString(R.string.pref_host_key);
 
-    private final static SharedPreferences sharedPreferences =  PreferenceManager.getDefaultSharedPreferences(sContext);
+    private final static SharedPreferences sharedPreferences =  PreferenceManager.getDefaultSharedPreferences(MainActivity.sContext);
 
-    public static void init() {
+    public static void initHost() {
         HttpHandler.setHost(sharedPreferences.getString(KEY_HOST, ""));
-        initUid();
     }
 
     public static void initUid() {
@@ -56,6 +55,10 @@ public class PreferenceHandler {
 
     public static void removeUid() {
         sharedPreferences.edit().remove(KEY_UID).apply();
+    }
+
+    public static void removeHost() {
+        sharedPreferences.edit().remove(KEY_HOST).apply();
     }
 
     private static void editSharedPreference(int type, String key, Object value) {

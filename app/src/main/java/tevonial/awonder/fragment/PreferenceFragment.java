@@ -24,44 +24,42 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
 
     private SeekBarPreference mStatePreference;
     private EditTextPreference mHostPreference;
-    private String mScreenSize;
+    private Preference mUidPreference;
 
-    private final String mStateKey = MainActivity.sContext.getString(R.string.pref_state_key),
-                         mHostKey  = MainActivity.sContext.getString(R.string.pref_host_key),
-                         mUidKey   = MainActivity.sContext.getString(R.string.pref_uid_key);
-
-    private final String mClickPreferenceKeys[] = {MainActivity.sContext.getString(R.string.pref_rem_history_key),
-                                                   MainActivity.sContext.getString(R.string.pref_rem_uid_key),
-                                                   MainActivity.sContext.getString(R.string.pref_self_respond_key)};
+    private final String mClickPreferenceKeys[] = { MainActivity.sContext.getString(R.string.pref_self_respond_key),
+                                                    MainActivity.sContext.getString(R.string.pref_rem_host_key),
+                                                    MainActivity.sContext.getString(R.string.pref_rem_uid_key),
+                                                    MainActivity.sContext.getString(R.string.pref_gen_uid_key) };
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (key.equals(mStateKey)) {
+            if (key.equals(PreferenceHandler.KEY_STATE)) {
                 changeState(mStatePreference.getProgress() - 1);
-            } else if (key.equals(mHostKey)) {
+            } else if (key.equals(PreferenceHandler.KEY_HOST)) {
                 String host = mHostPreference.getText().toLowerCase();
-
                 if (!host.isEmpty()) {
                     if (!host.startsWith("http://")) {
                         host = "http://" + host;
                     }
                 }
-                HttpHandler.setHost(host);
 
+                HttpHandler.setHost(host);
                 mHostPreference.setSummary(host);
-                mHostPreference.setText(host);
-            } else if (key.equals(mUidKey)) {
-                findPreference(MainActivity.sContext.getString(R.string.pref_det_uid_key)).setSummary(HttpHandler.getUid());
-                HttpHandler.requestGetJson(HttpHandler.GET_STATE, new HttpHandler.RequestHandler() {
-                    @Override
-                    public void onResponse(boolean success, String[] s) {
-                        if (success) {
-                            HttpHandler.setState(Integer.valueOf(s[0]));
-                            mStatePreference.setSummary(s[0]);
+            } else if (key.equals(PreferenceHandler.KEY_UID)) {
+                mUidPreference.setSummary(HttpHandler.getUid());
+
+                if (HttpHandler.hasUid()) {
+                    HttpHandler.requestGetJson(HttpHandler.GET_STATE, new HttpHandler.RequestHandler() {
+                        @Override
+                        public void onResponse(boolean success, String[] s) {
+                            if (success) {
+                                HttpHandler.setState(Integer.valueOf(s[0]));
+                                mStatePreference.setSummary(s[0]);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     };
@@ -89,19 +87,20 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
     public void onCreatePreferences(Bundle bundle, String s) {
         addPreferencesFromResource(R.xml.preferences);
 
-        mStatePreference = (SeekBarPreference) findPreference(mStateKey);
+        mStatePreference = (SeekBarPreference) findPreference(PreferenceHandler.KEY_STATE);
         mStatePreference.setDialogTitle("Change State");
         mStatePreference.setSummary(String.valueOf(HttpHandler.getState()));
         mStatePreference.setProgress(HttpHandler.getState()+1);
 
-        mHostPreference = (EditTextPreference) findPreference(mHostKey);
+        mHostPreference = (EditTextPreference) findPreference(PreferenceHandler.KEY_HOST);
         mHostPreference.setSummary(HttpHandler.getHost());
+
+        mUidPreference = findPreference(PreferenceHandler.KEY_UID);
+        mUidPreference.setSummary(HttpHandler.getUid());
 
         for (String key : mClickPreferenceKeys) {
             findPreference(key).setOnPreferenceClickListener(this);
         }
-
-        initDetails();
     }
 
     @Override
@@ -115,28 +114,27 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
     public boolean onPreferenceClick(Preference preference) {
         String key = preference.getKey();
 
-        if (key.equals(mClickPreferenceKeys[0])) {
-
-        } else if (key.equals(mClickPreferenceKeys[1])) {
-            HttpHandler.setUid("");
-            PreferenceHandler.removeUid();
-        } else if (key.equals(mClickPreferenceKeys[2])) {
+        if (key.equals(mClickPreferenceKeys[0])) {          //Self Respond
             AnswerPollDialogFragment mDialog = new AnswerPollDialogFragment();
             mDialog.setTargetFragment(this, 0);
             mDialog.setMode(PollFragment.sPollMode);
             mDialog.show(getActivity().getSupportFragmentManager(), "fragment_dialog_poll_answer");
+        } else if (key.equals(mClickPreferenceKeys[1])) {   //Clear Host
+            mHostPreference.setText("");
+            PreferenceHandler.removeHost();
+        } else if (key.equals(mClickPreferenceKeys[2])) {   //Clear UID
+            HttpHandler.setUid("");
+            PreferenceHandler.removeUid();
+        } else if (key.equals(mClickPreferenceKeys[3])) {   //Fetch UID
+            (new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    PreferenceHandler.initUid();
+                }
+            })).start();
         }
 
         return true;
-    }
-
-    public void setScreenSize(int w, int h) {
-        mScreenSize = String.valueOf(w) + "x" + String.valueOf(h);
-    }
-
-    private void initDetails() {
-        findPreference(MainActivity.sContext.getString(R.string.pref_det_uid_key)).setSummary(HttpHandler.getUid());
-        findPreference(MainActivity.sContext.getString(R.string.pref_det_screen_key)).setSummary(mScreenSize);
     }
 
     private void changeState(final int state) {

@@ -6,6 +6,7 @@ import tevonial.awonder.library.ServerStatusRequest;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.support.design.widget.Snackbar;
 import android.util.Patterns;
 import android.view.View;
@@ -22,7 +23,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class HttpHandler {
-    private static String mUid;
+    private static String mUid = "";
     private static int mState;
     private static String mHost;
 
@@ -48,7 +49,9 @@ public class HttpHandler {
 
     public static void setHost(String host) {
         mHost = host;
-        requestGetServerStatus();
+        if (hasHost()) {
+            requestGetServerStatus();
+        }
     }
 
     public static String getHost() {
@@ -135,14 +138,21 @@ public class HttpHandler {
     }
 
     private static void requestGetServerStatus() {
-        if (mHost.isEmpty()) return;
         ServerStatusRequest statusRequest = new ServerStatusRequest(mHost, new Response.Listener() {
             @Override
             public void onResponse(Object response) {
                 if (!mNetOnline) {
-                    if ((int)response == 200) {
+                    if ((int) response == 200) {
                         mNetOnline = true;
                         mErrorSnackBar.dismiss();
+                        if (!hasUid()) {
+                            (new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    PreferenceHandler.initUid();
+                                }
+                            })).start();
+                        }
                     } else {
                         onError(null);
                     }
