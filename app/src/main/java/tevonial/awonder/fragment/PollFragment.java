@@ -77,7 +77,7 @@ public class PollFragment extends Fragment implements DialogListener<String> {
                     MainActivity.sLoading.setVisibility(ProgressBar.INVISIBLE);
                     mPollView.setVisibility(View.VISIBLE);
 
-                    HttpHandler.getJson(HttpHandler.GET_MY_POLL, new HttpHandler.RequestHandler() {
+                    HttpHandler.requestGetJson(HttpHandler.GET_MY_POLL, new HttpHandler.RequestHandler() {
                                 @Override
                                 public void onResponse(boolean success, String[] s) {
                                     PollFragment.sPollStr = s[0];
@@ -91,7 +91,7 @@ public class PollFragment extends Fragment implements DialogListener<String> {
             }
         };
 
-        HttpHandler.getJson(HttpHandler.GET_STATE, requestStateHandler);
+        HttpHandler.requestGetJson(HttpHandler.GET_STATE, requestStateHandler);
     }
 
     private void getResults() {
@@ -125,7 +125,7 @@ public class PollFragment extends Fragment implements DialogListener<String> {
             }
         };
 
-        HttpHandler.getJson(HttpHandler.GET_RESULT, requestResultsHandler);
+        HttpHandler.requestGetJson(HttpHandler.GET_RESULT, requestResultsHandler);
     }
 
     private void sendPoll() {
@@ -150,7 +150,7 @@ public class PollFragment extends Fragment implements DialogListener<String> {
             obj.put("mode", sPollMode);
         } catch (JSONException e) {}
 
-        HttpHandler.postJson(HttpHandler.POST_POLL, new HttpHandler.RequestHandler() {
+        HttpHandler.requestPostJson(HttpHandler.POST_POLL, new HttpHandler.RequestHandler() {
                     @Override
                     public void onResponse(boolean success, String[] s) {
                         if (success) {
@@ -180,7 +180,7 @@ public class PollFragment extends Fragment implements DialogListener<String> {
         protected Void doInBackground(Void... v) {
             while (MainActivity.sCurrentView == 2) {
                 try {
-                    HttpHandler.getJson(HttpHandler.GET_COUNT, requestCountHandler);
+                    HttpHandler.requestGetJson(HttpHandler.GET_COUNT, requestCountHandler);
                     for (int i=0; i<5; i++) {
                         Thread.sleep(1000);
                         if (change) {

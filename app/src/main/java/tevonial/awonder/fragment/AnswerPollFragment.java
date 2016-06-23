@@ -154,7 +154,7 @@ public class AnswerPollFragment extends Fragment implements DialogListener<Integ
                     if (state > 0) {
                         int done = mQuota - state;
                         mProgress.setProgress((int) (((double) done * 100) / (double) mQuota));
-                        HttpHandler.getJson(HttpHandler.GET_POLL, requestPollHandler); return;
+                        HttpHandler.requestGetJson(HttpHandler.GET_POLL, requestPollHandler); return;
                     } else {
                         onDone();
                     }
@@ -164,9 +164,9 @@ public class AnswerPollFragment extends Fragment implements DialogListener<Integ
         };
 
         if (getStateFirst) {
-            HttpHandler.getJson(HttpHandler.GET_STATE, requestStateHandler);
+            HttpHandler.requestGetJson(HttpHandler.GET_STATE, requestStateHandler);
         } else {
-            HttpHandler.getJson(HttpHandler.GET_POLL, requestPollHandler);
+            HttpHandler.requestGetJson(HttpHandler.GET_POLL, requestPollHandler);
         }
     }
 
@@ -179,7 +179,7 @@ public class AnswerPollFragment extends Fragment implements DialogListener<Integ
             obj.put("a", String.valueOf(answer));
         } catch (JSONException e) {}
 
-        HttpHandler.postJson(HttpHandler.POST_ANSWER, new HttpHandler.RequestHandler() {
+        HttpHandler.requestPostJson(HttpHandler.POST_ANSWER, new HttpHandler.RequestHandler() {
                     @Override
                     public void onResponse(boolean success, String[] s) {
                         if (success) {

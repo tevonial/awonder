@@ -53,7 +53,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
                 mHostPreference.setText(host);
             } else if (key.equals(mUidKey)) {
                 findPreference(MainActivity.sContext.getString(R.string.pref_det_uid_key)).setSummary(HttpHandler.getUid());
-                HttpHandler.getJson(HttpHandler.GET_STATE, new HttpHandler.RequestHandler() {
+                HttpHandler.requestGetJson(HttpHandler.GET_STATE, new HttpHandler.RequestHandler() {
                     @Override
                     public void onResponse(boolean success, String[] s) {
                         if (success) {
@@ -146,7 +146,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
             obj.put("state", String.valueOf(state));
         } catch (JSONException e) {}
 
-        HttpHandler.postJson(HttpHandler.POST_STATE, new HttpHandler.RequestHandler() {
+        HttpHandler.requestPostJson(HttpHandler.POST_STATE, new HttpHandler.RequestHandler() {
             @Override
             public void onResponse(boolean success, String[] s) {
                 String text = (success) ? "Server updated" : "Server update error";
@@ -167,7 +167,7 @@ public class PreferenceFragment extends PreferenceFragmentCompat implements Pref
             obj.put("a", String.valueOf(input));
         } catch (JSONException e) {}
 
-        HttpHandler.postJson(HttpHandler.SELF_RESPOND, new HttpHandler.RequestHandler() {
+        HttpHandler.requestPostJson(HttpHandler.SELF_RESPOND, new HttpHandler.RequestHandler() {
             @Override
             public void onResponse(boolean success, String[] s) {
                 String text = (success) ? "Respond Success" : "Respond error";

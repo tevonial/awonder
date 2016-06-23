@@ -2,6 +2,7 @@ package tevonial.awonder.handler;
 
 import tevonial.awonder.MainActivity;
 import tevonial.awonder.R;
+import tevonial.awonder.library.ServerStatusRequest;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -32,9 +33,7 @@ public class HttpHandler {
     private static boolean mNetOnline = true;
 
                                 //Request Type                 url                  uid     param     expected return keys
-    public static RequestType   GET_SIG =      new RequestType("sig.php",           false,  "",       "sig"),
-
-                                GET_GEN_UID =  new RequestType("get_gen_uid.php",   false,  "",       "uid"),
+    public static RequestType   GET_GEN_UID =  new RequestType("get_gen_uid.php",   false,  "",       "uid"),
                                 GET_MY_POLL =  new RequestType("get_state.php",     true,   "poll",   "poll", "mode"),
                                 GET_STATE =    new RequestType("get_state.php",     true,   "state",  "state"),
                                 GET_COUNT =    new RequestType("get_state.php",     true,   "count",  "count"),
@@ -49,13 +48,7 @@ public class HttpHandler {
 
     public static void setHost(String host) {
         HttpHandler.mHost = host;
-
-        if (!host.isEmpty()) {
-            getJson(GET_SIG, new RequestHandler() {
-                @Override
-                public void onResponse(boolean success, String[] s) {}
-            });
-        }
+        requestGetServerStatus();
     }
 
     public static String getHost() {
@@ -141,7 +134,30 @@ public class HttpHandler {
         }
     }
 
-    public static void postJson(final RequestType requestType, final RequestHandler rh, final JSONObject body) {
+    private static void requestGetServerStatus() {
+        if (mHost.isEmpty()) return;
+        ServerStatusRequest statusRequest = new ServerStatusRequest(mHost, new Response.Listener() {
+            @Override
+            public void onResponse(Object response) {
+                if (!mNetOnline) {
+                    if ((int)response == 200) {
+                        mNetOnline = true;
+                        mErrorSnackBar.dismiss();
+                    } else {
+                        onError(null);
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                onError(null);
+            }
+        });
+        VolleyRequestHandler.getInstance(MainActivity.sContext).addToRequestQueue(statusRequest);
+    }
+
+    public static void requestPostJson(final RequestType requestType, final RequestHandler rh, final JSONObject body) {
         JsonObjectRequest request = new JsonObjectRequest
                 (Request.Method.POST, requestType.getUrl(), body, new Response.Listener<JSONObject>() {
                     @Override
@@ -162,7 +178,7 @@ public class HttpHandler {
         VolleyRequestHandler.getInstance(MainActivity.sContext).addToRequestQueue(request);
     }
 
-    public static void getJson(final RequestType requestType, final RequestHandler rh) {
+    public static void requestGetJson(final RequestType requestType, final RequestHandler rh) {
         JsonObjectRequest request = new JsonObjectRequest
                 (Request.Method.GET, requestType.getUrl(), null, new Response.Listener<JSONObject>() {
                     @Override
@@ -196,11 +212,13 @@ public class HttpHandler {
     }
 
     private static void onError(RequestHandler rh) {
-        rh.onResponse(false, null);
+        if (rh != null) {
+            rh.onResponse(false, null);
+        }
 
         ConnectivityManager cm = (ConnectivityManager) MainActivity.sContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         mNetConnected = (cm.getActiveNetworkInfo() != null && cm.getActiveNetworkInfo().isConnectedOrConnecting());
-        mNetValidUrl = Patterns.WEB_URL.matcher(GET_SIG.getUrl()).matches();
+        mNetValidUrl = Patterns.WEB_URL.matcher(mHost).matches();
         mNetOnline = false;
 
         MainActivity.sUiHandler.post(new Runnable() {
