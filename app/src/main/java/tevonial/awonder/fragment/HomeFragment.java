@@ -60,11 +60,11 @@ public class HomeFragment extends Fragment implements HttpHandler.RequestHandler
 
                     @Override
                     protected void onPostExecute(Void aVoid) {
-                        HttpHandler.getJson(HttpHandler.GET_STATE, HomeFragment.this);
+                        HttpHandler.requestGetJson(HttpHandler.GET_STATE, HomeFragment.this);
                     }
                 }).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             } else {
-                HttpHandler.getJson(HttpHandler.GET_STATE, this);
+                HttpHandler.requestGetJson(HttpHandler.GET_STATE, this);
             }
 
             return view;
